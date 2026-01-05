@@ -95,7 +95,17 @@
         </div>
 
         <h3>1. La Moto</h3>
-        
+
+        <div class="input-group">
+            <label>Modelo predefinido</label>
+            <select id="modeloMoto">
+                <option value="personalizado" selected>Configurar manualmente</option>
+                <option value="starkVarg">Stark Varg</option>
+                <option value="zeroS">Zero S</option>
+                <option value="f77Match2">Ultraviolette F77 Match 2</option>
+            </select>
+        </div>
+
         <div class="input-group">
             <label>Clase Vehículo (Matrícula)</label>
             <select id="claseVehiculo">
@@ -206,6 +216,48 @@
     let rutaDistanciaKm = 0;
     let velocidadMediaCalculada = 0;
     let tiempoHoras = 0;
+
+    const modelosMoto = {
+        starkVarg: {
+            clase: 'moto',
+            capacidad: 7200,
+            potencia: 11000,
+            peso: 127,
+            tipo: 'cross',
+            regenerativo: '2'
+        },
+        zeroS: {
+            clase: 'moto',
+            capacidad: 14400,
+            potencia: 11000,
+            peso: 223,
+            tipo: 'naked',
+            regenerativo: '2'
+        },
+        f77Match2: {
+            clase: 'moto',
+            capacidad: 10700,
+            potencia: 11000,
+            peso: 207,
+            tipo: 'naked',
+            regenerativo: '2'
+        }
+    };
+
+    document.getElementById('modeloMoto').addEventListener('change', function() {
+        const modelo = this.value;
+        if (modelo === 'personalizado') return;
+
+        const datos = modelosMoto[modelo];
+        if (!datos) return;
+
+        document.getElementById('claseVehiculo').value = datos.clase;
+        document.getElementById('capacidadWh').value = datos.capacidad;
+        document.getElementById('potenciaW').value = datos.potencia;
+        document.getElementById('pesoMoto').value = datos.peso;
+        document.getElementById('tipoMoto').value = datos.tipo;
+        document.getElementById('regeneracion').value = datos.regenerativo;
+    });
 
     // 1. INICIALIZAR MAPA
     var map = L.map('map').setView([39.6136, 2.8822], 9); 
