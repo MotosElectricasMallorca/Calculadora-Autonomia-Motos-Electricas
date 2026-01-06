@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Calculadora Rutas Moto EV</title>
+    <title>Calculadora Autonomía Real</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -14,68 +14,88 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <style>
-        /* RESET Y ESTRUCTURA */
+        /* --- ESTILOS VISUALES (TU DISEÑO ELEGIDO) --- */
         html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
-        :root { --primary: #2563eb; --danger: #dc2626; --bg: #f1f5f9; --card: #ffffff; --text: #0f172a; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--text); display: flex; flex-direction: column; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: #f8fafc; color: #334155; display: flex; flex-direction: column; }
         
         .main-layout { display: flex; flex-direction: column; height: 100%; width: 100%; }
         
         /* MAPA */
-        #map { flex: 1; min-height: 45vh; width: 100%; background-color: #e2e8f0; z-index: 1; }
-        
-        /* Ajuste para que el buscador se vea bien */
+        #map { flex: 1; width: 100%; min-height: 40vh; z-index: 1; }
         .leaflet-control-geocoder { z-index: 1000; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
 
         /* PANEL LATERAL */
         .controls-container { 
             flex: 1; 
-            padding: 20px; 
+            width: 100%;
+            background: #ffffff; 
+            padding: 25px; 
             overflow-y: auto; 
-            background: var(--card); 
-            box-shadow: -2px 0 15px rgba(0,0,0,0.1); 
-            z-index: 2;
-            border-top: 4px solid var(--primary);
+            box-shadow: -4px 0 20px rgba(0,0,0,0.08); 
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border-top: 4px solid #2563eb;
         }
 
-        /* TIPOGRAFÍA Y FORMULARIOS */
-        h2 { margin: 0 0 20px 0; font-size: 1.4rem; color: var(--primary); border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
-        h3 { margin: 15px 0 10px 0; font-size: 1rem; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
+        h2 { margin: 0 0 10px 0; font-size: 1.2rem; color: #2563eb; text-align: center; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        h3 { margin: 15px 0 5px 0; font-size: 0.85rem; color: #64748b; text-transform: uppercase; font-weight: 700; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; }
+
+        /* BARRA DE ESTADO */
+        .status-bar { 
+            background: #1e293b; 
+            color: white; 
+            padding: 15px; 
+            border-radius: 8px; 
+            display: flex; 
+            justify-content: space-between; 
+            text-align: center; 
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+        .status-item span { display: block; font-size: 1.1rem; font-weight: bold; color: #38bdf8; margin-top: 4px; }
+
+        /* FORMULARIOS */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .input-group { margin-bottom: 5px; }
+        label { display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 5px; color: #64748b; }
         
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .input-group { margin-bottom: 10px; }
-        
-        label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: #64748b; }
-        input, select { width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; background: #fff; transition: 0.2s; box-sizing: border-box; }
-        input:focus, select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-        
-        /* ESTADO BAR */
-        .status-bar { background: #1e293b; color: white; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; margin-bottom: 20px; text-align: center; font-size: 0.9rem; }
-        .status-item span { display: block; font-size: 1.1rem; font-weight: bold; color: #38bdf8; margin-top: 2px; }
+        input, select { 
+            width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; 
+            font-size: 0.95rem; color: #334155; background: #fff; box-sizing: border-box; transition: all 0.2s;
+        }
+        input:focus, select:focus { border-color: #2563eb; outline: none; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        input[readonly], select[disabled] { background-color: #f8fafc; color: #94a3b8; border-color: #e2e8f0; cursor: not-allowed; }
+
+        /* SELECT2 ESTILO */
+        .select2-container .select2-selection--single { height: 42px !important; border: 1px solid #cbd5e1 !important; border-radius: 6px !important; display: flex; align-items: center; }
+        .select2-container--default .select2-selection--single .select2-selection__rendered { color: #334155 !important; padding-left: 12px; font-size: 0.95rem; }
+        .select2-container--default .select2-selection--single .select2-selection__arrow { height: 40px !important; right: 5px !important; }
+        .select2-dropdown { border-color: #cbd5e1 !important; border-radius: 6px !important; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important; z-index: 9999; }
 
         /* BOTONES */
-        button.action-btn { width: 100%; padding: 14px; background-color: var(--primary); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 6px -1px rgba(37,99,235,0.4); transition: 0.2s; }
-        button.action-btn:hover { background-color: #1d4ed8; transform: translateY(-1px); }
-        
-        button.reset-btn { background-color: #94a3b8; margin-top: 10px; font-size: 0.9rem; padding: 10px; box-shadow: none; }
-        button.reset-btn:hover { background-color: #64748b; }
+        button.action-btn { width: 100%; padding: 14px; background-color: #2563eb; color: white; border: none; border-radius: 6px; font-size: 0.95rem; font-weight: 700; text-transform: uppercase; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
+        button.action-btn:hover { background-color: #1d4ed8; }
+        button.reset-btn { background-color: white; color: #64748b; border: 1px solid #e2e8f0; margin-top: 5px; font-weight: 600; }
+        button.reset-btn:hover { background-color: #f1f5f9; color: #ef4444; border-color: #ef4444; }
 
         /* RESULTADOS */
-        #resultado { display: none; margin-top: 20px; padding: 15px; border-radius: 8px; text-align: center; border: 2px solid transparent; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .res-success { background-color: #f0fdf4; border-color: #22c55e !important; color: #15803d; }
-        .res-fail { background-color: #fef2f2; border-color: #ef4444 !important; color: #991b1b; }
-
-        /* DISCLAIMER */
-        .disclaimer { font-size: 0.7em; color: #94a3b8; margin-top: 30px; text-align: justify; line-height: 1.4; border-top: 1px solid #e2e8f0; padding-top: 10px; }
+        #resultado { display: none; margin-top: 15px; padding: 15px; border-radius: 8px; text-align: center; }
+        .res-success { background-color: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .res-fail { background-color: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .disclaimer { font-size: 0.75em; color: #94a3b8; margin-top: 20px; text-align: center; line-height: 1.4; border-top: 1px solid #e2e8f0; padding-top: 10px; }
 
         /* RESPONSIVE */
         @media (min-width: 900px) {
             .main-layout { flex-direction: row; }
             #map { height: 100vh; width: 65%; flex: none; }
-            .controls-container { width: 35%; height: 100vh; padding: 30px; }
+            .controls-container { width: 35%; height: 100vh; border-left: 1px solid #e2e8f0; border-top: none; }
         }
     </style>
 </head>
@@ -86,7 +106,7 @@
     
     <div class="controls-container">
         
-        <h2>⚙️ Calculadora Rutas Moto EV</h2>
+        <h2>⚙️ Calculadora Autonomía Real</h2>
 
         <div class="status-bar">
             <div class="status-item">Distancia<br><span id="rutaDist">0 km</span></div>
@@ -95,46 +115,110 @@
         </div>
 
         <h3>1. La Moto</h3>
-        
         <div class="input-group">
-            <label>Clase Vehículo (Matrícula)</label>
-            <select id="claseVehiculo">
-                <option value="moto" selected>Motocicleta (>45km/h - Blanca)</option>
-                <option value="ciclomotor">Ciclomotor (Max 45km/h - Amarilla)</option>
+            <label>Modelo de Moto</label>
+            <select id="modeloMoto" style="width: 100%;">
+                <option value="custom">-- 🛠️ PERSONALIZADO / CONFIGURAR --</option>
+                <optgroup label="Stark Future">
+                    <option value="stark_varg_ex" selected>Stark Varg EX</option>
+                    <option value="stark_varg_sm">Stark Varg SM</option>
+                </optgroup>
+                <optgroup label="Cecotec">
+                    <option value="cecotec_halo">Cecotec HALO</option>
+                    <option value="cecotec_shark_rs">Cecotec Shark RS</option>
+                    <option value="cecotec_vulcano">Cecotec VULCANO</option>
+                </optgroup>
+                <optgroup label="Efun">
+                    <option value="efun_deer">Efun DEER</option>
+                    <option value="efun_lion_180">Efun LION 180</option>
+                    <option value="efun_tiger">Efun TIGER</option>
+                    <option value="efun_pusa">Efun PUSA</option>
+                </optgroup>
+                <optgroup label="Next">
+                    <option value="next_mojito">Next MOJITO</option>
+                    <option value="next_nx1">Next NX1</option>
+                    <option value="next_nx2">Next NX2</option>
+                    <option value="next_nxplus">Next NXPlus</option>
+                </optgroup>
+                <optgroup label="Segway">
+                    <option value="segway_b110s">Segway B110S</option>
+                    <option value="segway_e150s">Segway E150S</option>
+                    <option value="segway_e250s">Segway E250S</option>
+                    <option value="segway_e300se">Segway E300SE</option>
+                </optgroup>
+                <optgroup label="Talaria">
+                    <option value="talaria_komodo">Talaria KOMODO</option>
+                    <option value="talaria_sting_pro_mx5">Talaria Sting PRO MX5</option>
+                    <option value="talaria_sting_r">Talaria Sting R</option>
+                    <option value="talaria_xxx">Talaria xXx</option>
+                </optgroup>
+                <optgroup label="Ultraviolette">
+                    <option value="ultraviolette_f77_match2">Ultraviolette F77 Match 2</option>
+                </optgroup>
+                <optgroup label="Velca">
+                    <option value="velca_bora_plus">Velca BORA+</option>
+                    <option value="velca_calima_50">Velca Calima 50</option>
+                    <option value="velca_calima_s">Velca Calima S</option>
+                    <option value="velca_eon">Velca EON</option>
+                    <option value="velca_nude">Velca NUDE</option>
+                    <option value="velca_one">Velca ONE</option>
+                    <option value="velca_tramontana_s">Velca Tramontana S</option>
+                    <option value="velca_vortex">Velca Vortex</option>
+                </optgroup>
+                <optgroup label="Zero Motorcycles">
+                    <option value="zero_ds">Zero DS</option>
+                    <option value="zero_dsrx_a">Zero DSR/X (A)</option>
+                    <option value="zero_dsrx_black_forest">Zero DSR/X Black Forest</option>
+                    <option value="zero_fxe">Zero FXE</option>
+                    <option value="zero_s">Zero S</option>
+                    <option value="zero_srf">Zero SR/F</option>
+                    <option value="zero_xb">Zero XB</option>
+                    <option value="zero_xe">Zero XE</option>
+                </optgroup>
             </select>
         </div>
 
         <div class="grid-2">
             <div class="input-group">
                 <label>Capacidad (Wh)</label>
-                <input type="number" id="capacidadWh" value="2880" placeholder="V * Ah">
+                <input type="number" id="capacidadWh" value="7200" readonly>
             </div>
             <div class="input-group">
-                <label title="Potencia Nominal (Sostenida)">Potencia Nom. (W)</label>
-                <input type="number" id="potenciaW" value="3000" placeholder="Ej: 3000">
+                <label>Potencia (W)</label>
+                <input type="number" id="potenciaW" value="11000" readonly>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="input-group">
+                <label>Peso Moto (kg)</label>
+                <input type="number" id="pesoMoto" value="124" readonly>
+            </div>
+            <div class="input-group">
+                <label>Clase</label>
+                <select id="claseVehiculo" disabled>
+                    <option value="moto" selected>Moto (>45km/h)</option>
+                    <option value="ciclomotor">Ciclo (Max 45)</option>
+                </select>
             </div>
         </div>
         <div class="grid-2">
             <div class="input-group">
-                <label>Peso Moto (kg)</label>
-                <input type="number" id="pesoMoto" value="100">
-            </div>
-            <div class="input-group">
-                <label>Tipo / Aerodinámica</label>
-                <select id="tipoMoto">
-                    <option value="scooter">Scooter (Urbano)</option>
-                    <option value="naked" selected>Naked (Estándar)</option>
-                    <option value="cross">Cross/Enduro (Mala aero)</option>
+                <label>Aerodinámica</label>
+                <select id="tipoMoto" disabled>
+                    <option value="scooter">Scooter</option>
+                    <option value="naked">Naked</option>
+                    <option value="cross" selected>Cross</option>
                 </select>
             </div>
-        </div>
-        <div class="input-group">
-            <label title="Recuperación de energía al frenar">Freno Regenerativo</label>
-            <select id="regeneracion">
-                <option value="0">Desactivado / Rueda Libre</option>
-                <option value="1" selected>Normal</option>
-                <option value="2">Alto (One-Pedal driving)</option>
-            </select>
+            <div class="input-group">
+                <label>Freno Reg.</label>
+                <select id="regeneracion" disabled>
+                    <option value="0">Off</option>
+                    <option value="1" selected>Normal</option>
+                    <option value="2">Alto</option>
+                </select>
+            </div>
         </div>
 
         <h3>2. Carga y Estilo</h3>
@@ -148,7 +232,7 @@
                 <select id="estilo">
                     <option value="eco">Chill / Eco</option>
                     <option value="normal" selected>Normal</option>
-                    <option value="sport">Agresivo / Puño a fondo</option>
+                    <option value="sport">Sport / Agresivo</option>
                 </select>
             </div>
         </div>
@@ -156,11 +240,11 @@
         <h3>3. Entorno y Vía</h3>
         <div class="grid-2">
             <div class="input-group">
-                <label>Tráfico (Afecta veloc.)</label>
+                <label>Tráfico</label>
                 <select id="trafico">
                     <option value="low" selected>Fluido (Rápido)</option>
-                    <option value="medium">Normal / Urbano</option>
-                    <option value="high">Denso / Atascos</option>
+                    <option value="medium">Normal</option>
+                    <option value="high">Denso (Lento)</option>
                 </select>
             </div>
             <div class="input-group">
@@ -173,345 +257,266 @@
                 <label>Viento (Frontal)</label>
                 <select id="viento">
                     <option value="0" selected>Sin viento</option>
-                    <option value="5">Brisa ligera (15 km/h)</option>
-                    <option value="10">Viento Fuerte (30 km/h)</option>
+                    <option value="5">Brisa (15 km/h)</option>
+                    <option value="10">Fuerte (30 km/h)</option>
                 </select>
             </div>
             <div class="input-group">
-                <label>Terreno (Promedio)</label>
+                <label>Terreno</label>
                 <select id="terreno">
                     <option value="flat" selected>Llano</option>
-                    <option value="hilly">Con cuestas (Mixto)</option>
-                    <option value="mountain">Montaña (Subidas duras)</option>
+                    <option value="hilly">Mixto</option>
+                    <option value="mountain">Montaña</option>
                 </select>
             </div>
         </div>
 
         <button class="action-btn" onclick="calcularViabilidad()">COMPROBAR AUTONOMÍA</button>
-        <button class="action-btn reset-btn" onclick="borrarRuta()">Borrar Ruta Completa</button>
+        <button class="action-btn reset-btn" onclick="borrarRuta()">🗑️ Borrar Ruta Completa</button>
 
         <div id="resultado">
-            <h3 id="resTitulo" style="margin:0 0 10px 0;"></h3>
+            <h3 id="resTitulo" style="margin:0 0 10px 0; border:none; color:inherit;"></h3>
             <div id="resMensaje"></div>
         </div>
-        
+
         <p class="disclaimer">
-            <strong>Instrucciones:</strong> Usa la Lupa 🔍 para buscar calles. Haz clic en el mapa para marcar puntos. Si pulsas sobre un punto existente, podrás borrarlo del mapa.
+            Usa la Lupa 🔍 del mapa para buscar calles. Haz clic en el mapa para usar el menú de ruta.
         </p>
     </div>
 </div>
 
 <script>
-    // --- VARIABLES GLOBALES ---
-    let rutaDistanciaKm = 0;
-    let velocidadMediaCalculada = 0;
-    let tiempoHoras = 0;
+    // --- DATOS MOTO ---
+    const MODELOS_MOTO = {
+        stark_varg_ex: { claseVehiculo: "moto", capacidadWh: 7200, potenciaW: 11000, pesoMoto: 124, tipoMoto: "cross", regeneracion: "1" },
+        stark_varg_sm: { claseVehiculo: "moto", capacidadWh: 7200, potenciaW: 11000, pesoMoto: 125, tipoMoto: "cross", regeneracion: "1" },
+        zero_ds: { claseVehiculo: "moto", capacidadWh: 15600, potenciaW: 11000, pesoMoto: 223, tipoMoto: "naked", regeneracion: "1" },
+        zero_dsrx_a: { claseVehiculo: "moto", capacidadWh: 17300, potenciaW: 36000, pesoMoto: 247, tipoMoto: "naked", regeneracion: "1" },
+        zero_dsrx_black_forest: { claseVehiculo: "moto", capacidadWh: 17300, potenciaW: 36000, pesoMoto: 247, tipoMoto: "naked", regeneracion: "1" },
+        zero_fxe: { claseVehiculo: "moto", capacidadWh: 7200, potenciaW: 11000, pesoMoto: 130, tipoMoto: "cross", regeneracion: "1" },
+        zero_s: { claseVehiculo: "moto", capacidadWh: 15600, potenciaW: 11000, pesoMoto: 223, tipoMoto: "naked", regeneracion: "1" },
+        zero_srf: { claseVehiculo: "moto", capacidadWh: 17300, potenciaW: 40000, pesoMoto: 227, tipoMoto: "naked", regeneracion: "1" },
+        zero_xb: { claseVehiculo: "ciclomotor", capacidadWh: 2400, potenciaW: 4000, pesoMoto: 63, tipoMoto: "cross", regeneracion: "1" },
+        zero_xe: { claseVehiculo: "moto", capacidadWh: 4300, potenciaW: 11000, pesoMoto: 101, tipoMoto: "cross", regeneracion: "1" },
+        ultraviolette_f77_match2: { claseVehiculo: "moto", capacidadWh: 10300, potenciaW: 27000, pesoMoto: 207, tipoMoto: "naked", regeneracion: "1" },
+        cecotec_halo: { claseVehiculo: "moto", capacidadWh: 4032, potenciaW: 7550, pesoMoto: 115, tipoMoto: "scooter", regeneracion: "0" },
+        cecotec_shark_rs: { claseVehiculo: "moto", capacidadWh: 4320, potenciaW: 3000, pesoMoto: 115, tipoMoto: "scooter", regeneracion: "0" },
+        cecotec_vulcano: { claseVehiculo: "moto", capacidadWh: 7200, potenciaW: 6000, pesoMoto: 150, tipoMoto: "scooter", regeneracion: "0" },
+        efun_deer: { claseVehiculo: "moto", capacidadWh: 4536, potenciaW: 7000, pesoMoto: 112, tipoMoto: "scooter", regeneracion: "0" },
+        efun_lion_180: { claseVehiculo: "moto", capacidadWh: 12600, potenciaW: 11000, pesoMoto: 228, tipoMoto: "scooter", regeneracion: "0" },
+        efun_tiger: { claseVehiculo: "moto", capacidadWh: 10800, potenciaW: 7000, pesoMoto: 160, tipoMoto: "scooter", regeneracion: "0" },
+        efun_pusa: { claseVehiculo: "moto", capacidadWh: 3600, potenciaW: 5000, pesoMoto: 110, tipoMoto: "scooter", regeneracion: "0" },
+        next_mojito: { claseVehiculo: "moto", capacidadWh: 3960, potenciaW: 3500, pesoMoto: 109, tipoMoto: "scooter", regeneracion: "0" },
+        next_nx1: { claseVehiculo: "ciclomotor", capacidadWh: 1200, potenciaW: 800, pesoMoto: 65, tipoMoto: "scooter", regeneracion: "0" },
+        next_nx2: { claseVehiculo: "moto", capacidadWh: 8640, potenciaW: 10000, pesoMoto: 173, tipoMoto: "scooter", regeneracion: "0" },
+        next_nxplus: { claseVehiculo: "moto", capacidadWh: 3600, potenciaW: 4000, pesoMoto: 104, tipoMoto: "scooter", regeneracion: "0" },
+        segway_b110s: { claseVehiculo: "ciclomotor", capacidadWh: 1440, potenciaW: 1200, pesoMoto: 70, tipoMoto: "scooter", regeneracion: "1" },
+        segway_e150s: { claseVehiculo: "ciclomotor", capacidadWh: 2440, potenciaW: 2700, pesoMoto: 115, tipoMoto: "scooter", regeneracion: "1" },
+        segway_e250s: { claseVehiculo: "moto", capacidadWh: 4000, potenciaW: 5000, pesoMoto: 125, tipoMoto: "scooter", regeneracion: "1" },
+        segway_e300se: { claseVehiculo: "moto", capacidadWh: 4000, potenciaW: 7800, pesoMoto: 126, tipoMoto: "scooter", regeneracion: "1" },
+        talaria_komodo: { claseVehiculo: "moto", capacidadWh: 4374, potenciaW: 11000, pesoMoto: 98, tipoMoto: "cross", regeneracion: "1" },
+        talaria_sting_pro_mx5: { claseVehiculo: "ciclomotor", capacidadWh: 2880, potenciaW: 5000, pesoMoto: 76, tipoMoto: "cross", regeneracion: "1" },
+        talaria_sting_r: { claseVehiculo: "moto", capacidadWh: 2700, potenciaW: 4000, pesoMoto: 66, tipoMoto: "cross", regeneracion: "1" },
+        talaria_xxx: { claseVehiculo: "moto", capacidadWh: 2400, potenciaW: 2500, pesoMoto: 58, tipoMoto: "cross", regeneracion: "1" },
+        velca_bora_plus: { claseVehiculo: "ciclomotor", capacidadWh: 1800, potenciaW: 2000, pesoMoto: 70, tipoMoto: "scooter", regeneracion: "0" },
+        velca_calima_50: { claseVehiculo: "ciclomotor", capacidadWh: 1800, potenciaW: 2000, pesoMoto: 83, tipoMoto: "scooter", regeneracion: "0" },
+        velca_calima_s: { claseVehiculo: "moto", capacidadWh: 4320, potenciaW: 5000, pesoMoto: 83, tipoMoto: "scooter", regeneracion: "0" },
+        velca_eon: { claseVehiculo: "moto", capacidadWh: 13000, potenciaW: 11000, pesoMoto: 229, tipoMoto: "scooter", regeneracion: "0" },
+        velca_nude: { claseVehiculo: "moto", capacidadWh: 5760, potenciaW: 9500, pesoMoto: 135, tipoMoto: "naked", regeneracion: "0" }, 
+        velca_one: { claseVehiculo: "moto", capacidadWh: 8200, potenciaW: 7000, pesoMoto: 149, tipoMoto: "scooter", regeneracion: "0" },
+        velca_tramontana_s: { claseVehiculo: "moto", capacidadWh: 3024, potenciaW: 5000, pesoMoto: 83, tipoMoto: "scooter", regeneracion: "0" },
+        velca_vortex: { claseVehiculo: "moto", capacidadWh: 8200, potenciaW: 8000, pesoMoto: 199, tipoMoto: "naked", regeneracion: "0" }
+    };
 
-    // 1. INICIALIZAR MAPA
-    var map = L.map('map').setView([39.6136, 2.8822], 9); 
+    function aplicarModeloSeleccionado() {
+        const modeloId = $('#modeloMoto').val(); 
+        const inputs = [document.getElementById("claseVehiculo"), document.getElementById("capacidadWh"), document.getElementById("potenciaW"), document.getElementById("pesoMoto"), document.getElementById("tipoMoto"), document.getElementById("regeneracion")];
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
-
-    // 2. CONFIGURACIÓN DEL BUSCADOR (LUPA)
-    var geocoder = L.Control.Geocoder.nominatim();
-    
-    L.Control.geocoder({
-        geocoder: geocoder,
-        defaultMarkGeocode: false, 
-        placeholder: "Buscar calle o ciudad..."
-    })
-    .on('markgeocode', function(e) {
-        var bbox = e.geocode.bbox;
-        var poly = L.polygon([
-            bbox.getSouthEast(),
-            bbox.getNorthEast(),
-            bbox.getNorthWest(),
-            bbox.getSouthWest()
-        ]);
-        map.fitBounds(poly.getBounds());
-        
-        // Popup simple
-        L.popup()
-            .setLatLng(e.geocode.center)
-            .setContent("<b>" + e.geocode.name + "</b><br>Haz clic aquí para marcar Inicio o Destino.")
-            .openOn(map);
-    })
-    .addTo(map);
-
-    // 3. CONFIGURACIÓN DE RUTA
-    var control = L.Routing.control({
-        waypoints: [],
-        routeWhileDragging: true,
-        language: 'es',
-        geocoder: geocoder, 
-        createMarker: function(i, wp, nWps) {
-            return L.marker(wp.latLng, { draggable: true });
+        if (modeloId === 'custom') {
+            inputs.forEach(el => { el.removeAttribute('disabled'); el.removeAttribute('readonly'); el.style.backgroundColor = '#fff'; });
+        } else {
+            const data = MODELOS_MOTO[modeloId];
+            if (!data) return;
+            document.getElementById("claseVehiculo").value = data.claseVehiculo;
+            document.getElementById("capacidadWh").value = data.capacidadWh;
+            document.getElementById("potenciaW").value = data.potenciaW;
+            document.getElementById("pesoMoto").value = data.pesoMoto;
+            document.getElementById("tipoMoto").value = data.tipoMoto;
+            document.getElementById("regeneracion").value = data.regeneracion;
+            inputs.forEach(el => {
+                if(el.tagName === 'SELECT') el.setAttribute('disabled', true); else el.setAttribute('readonly', true);
+                el.style.backgroundColor = ''; 
+            });
         }
+    }
+
+    $(document).ready(function() {
+        $('#modeloMoto').select2({ placeholder: "Buscar modelo...", language: { noResults: () => "Modelo no encontrado" } });
+        $('#modeloMoto').on('select2:select', function (e) { aplicarModeloSeleccionado(); });
+        aplicarModeloSeleccionado();
+    });
+
+    // --- MAPA (LÓGICA RESTAURADA) ---
+    var map = L.map('map').setView([39.6136, 2.8822], 9); 
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+
+    var geocoder = L.Control.Geocoder.nominatim();
+    L.Control.geocoder({
+        geocoder: geocoder, defaultMarkGeocode: false, placeholder: "Buscar calle o ciudad..."
+    }).on('markgeocode', function(e) {
+        var bbox = e.geocode.bbox;
+        var poly = L.polygon([bbox.getSouthEast(), bbox.getNorthEast(), bbox.getNorthWest(), bbox.getSouthWest()]);
+        map.fitBounds(poly.getBounds());
+        L.popup().setLatLng(e.geocode.center).setContent("<b>" + e.geocode.name + "</b><br>Haz clic aquí para marcar.").openOn(map);
     }).addTo(map);
 
-    // Ocultar panel de instrucciones nativo
+    var control = L.Routing.control({
+        waypoints: [], routeWhileDragging: true, language: 'es', geocoder: geocoder, 
+        createMarker: function(i, wp, nWps) { return L.marker(wp.latLng, { draggable: true }); }
+    }).addTo(map);
+
     var style = document.createElement('style');
     style.innerHTML = '.leaflet-routing-container { display: none !important; }';
     document.getElementsByTagName('head')[0].appendChild(style);
 
-    // 4. ACTUALIZACIÓN DE DATOS DE RUTA
+    let rutaDistanciaKm = 0;
+    let velocidadMediaCalculada = 0;
+
     control.on('routesfound', function(e) {
-        var routes = e.routes;
-        var summary = routes[0].summary;
-
+        var summary = e.routes[0].summary;
         rutaDistanciaKm = summary.totalDistance / 1000;
-        tiempoHoras = summary.totalTime / 3600;
-
-        if (tiempoHoras > 0) {
-            velocidadMediaCalculada = rutaDistanciaKm / tiempoHoras;
-        }
-
+        let tiempoHoras = summary.totalTime / 3600;
+        if (tiempoHoras > 0) velocidadMediaCalculada = rutaDistanciaKm / tiempoHoras;
         document.getElementById('rutaDist').innerText = rutaDistanciaKm.toFixed(1) + " km";
         document.getElementById('rutaTime').innerText = Math.round(summary.totalTime / 60) + " min";
         document.getElementById('rutaVel').innerText = Math.round(velocidadMediaCalculada) + " km/h";
     });
 
-    // 5. LÓGICA DE CLICS INTELIGENTE
+    // --- CLICS INTELIGENTES (CON EL BOTÓN QUE PEDISTE) ---
     map.on('click', function(e) {
         var clickLatLng = e.latlng;
         var waypoints = control.getWaypoints();
-        
-        // A. DETECTAR SI EL CLIC ES PARA EDITAR UN PUNTO EXISTENTE
         var indexToDelete = -1;
-        var minDist = 200; // metros de tolerancia para detectar clic
+        var minDist = 200; 
 
-        // Revisar waypoints existentes
         for (var i = 0; i < waypoints.length; i++) {
             if (waypoints[i].latLng) {
                 var dist = map.distance(clickLatLng, waypoints[i].latLng);
-                if (dist < minDist) {
-                    minDist = dist;
-                    indexToDelete = i;
-                }
+                if (dist < minDist) { minDist = dist; indexToDelete = i; }
             }
         }
 
         var container = L.DomUtil.create('div');
 
         if (indexToDelete !== -1) {
-            // --- MODO BORRAR PUNTO EXISTENTE ---
+            // MENÚ BORRAR PUNTO
             var delBtn = createButton('🗑️ Borrar este punto', container, '#dc2626');
-            
+            L.DomEvent.on(delBtn, 'click', function() { control.spliceWaypoints(indexToDelete, 1); map.closePopup(); });
+
+            if (indexToDelete === 0 && waypoints.length > 1) {
+                var loopBtn = createButton('🔄 Cerrar Círculo', container, '#8b5cf6');
+                L.DomEvent.on(loopBtn, 'click', function() { control.spliceWaypoints(waypoints.length - 1, 1, waypoints[0].latLng); map.closePopup(); });
+            }
             L.popup().setContent(container).setLatLng(waypoints[indexToDelete].latLng).openOn(map);
-
-            L.DomEvent.on(delBtn, 'click', function() {
-                control.spliceWaypoints(indexToDelete, 1);
-                map.closePopup();
-            });
-
         } else {
-            // --- MODO AÑADIR NUEVO PUNTO ---
+            // MENÚ NUEVO PUNTO (CON LOS 4 BOTONES INCLUYENDO BORRAR RUTA)
             var startBtn = createButton('🏁 Fijar Inicio', container, '#2563eb');
             var stopBtn = createButton('📍 Añadir Parada', container, '#d97706');
-            var destBtn = createButton('🏁 Fijar Destino', container, '#10b981'); 
+            var destBtn = createButton('🏁 Fijar Destino', container, '#10b981');
+            var clearAllBtn = createButton('🗑️ Borrar Ruta Completa', container, '#94a3b8'); // EL BOTÓN QUE FALTABA
 
             L.popup().setContent(container).setLatLng(clickLatLng).openOn(map);
 
-            L.DomEvent.on(startBtn, 'click', function() {
-                control.spliceWaypoints(0, 1, clickLatLng);
-                map.closePopup();
-            });
-
+            L.DomEvent.on(startBtn, 'click', function() { control.spliceWaypoints(0, 1, clickLatLng); map.closePopup(); });
             L.DomEvent.on(stopBtn, 'click', function() {
-                var wps = control.getWaypoints();
-                // Lógica inteligente para insertar en medio si ya hay destino
-                var insertIndex = Math.max(1, wps.length - 1);
-                control.spliceWaypoints(insertIndex, 0, clickLatLng);
-                map.closePopup();
+                var wps = control.getWaypoints(); var insertIndex = Math.max(1, wps.length - 1);
+                control.spliceWaypoints(insertIndex, 0, clickLatLng); map.closePopup();
             });
-
-            L.DomEvent.on(destBtn, 'click', function() {
-                var wps = control.getWaypoints();
-                control.spliceWaypoints(wps.length - 1, 1, clickLatLng);
-                map.closePopup();
-            });
+            L.DomEvent.on(destBtn, 'click', function() { var wps = control.getWaypoints(); control.spliceWaypoints(wps.length - 1, 1, clickLatLng); map.closePopup(); });
+            
+            // ACCIÓN DEL BOTÓN QUE FALTABA
+            L.DomEvent.on(clearAllBtn, 'click', function() { borrarRuta(); map.closePopup(); });
         }
     });
 
     function createButton(label, container, bgColor) {
         var btn = L.DomUtil.create('button', '', container);
-        btn.type = 'button';
         btn.innerHTML = label;
-        btn.style.margin = '5px 0';
-        btn.style.padding = '8px 12px';
-        btn.style.cursor = 'pointer';
-        btn.style.background = bgColor;
-        btn.style.color = 'white';
-        btn.style.border = 'none';
-        btn.style.borderRadius = '4px';
-        btn.style.width = '100%';
-        btn.style.fontWeight = 'bold';
+        btn.style.margin = '5px 0'; btn.style.padding = '8px 12px'; btn.style.cursor = 'pointer';
+        btn.style.background = bgColor; btn.style.color = 'white'; btn.style.border = 'none'; btn.style.borderRadius = '4px'; btn.style.width = '100%'; btn.style.fontWeight = 'bold';
         return btn;
     }
 
     function borrarRuta() {
-        control.setWaypoints([]);
-        rutaDistanciaKm = 0;
+        control.setWaypoints([]); rutaDistanciaKm = 0;
         document.getElementById('resultado').style.display = 'none';
-        document.getElementById('rutaDist').innerText = "0 km";
-        document.getElementById('rutaTime').innerText = "0 min";
-        document.getElementById('rutaVel').innerText = "0 km/h";
+        document.getElementById('rutaDist').innerText = "0 km"; document.getElementById('rutaTime').innerText = "0 min"; document.getElementById('rutaVel').innerText = "0 km/h";
     }
 
-    // 6. CÁLCULO FÍSICO AVANZADO
+    // --- CÁLCULO ---
     function calcularViabilidad() {
-        if (rutaDistanciaKm === 0) {
-            alert("⚠️ Por favor, define una ruta en el mapa primero.");
-            return;
-        }
+        if (rutaDistanciaKm === 0) { alert("⚠️ Primero marca una ruta en el mapa."); return; }
 
-        // --- RECOGIDA DE DATOS ---
         let claseVehiculo = document.getElementById('claseVehiculo').value;
-        
         let wh = parseFloat(document.getElementById('capacidadWh').value) || 0;
         let potenciaNominal = parseFloat(document.getElementById('potenciaW').value) || 3000;
         let pesoM = parseFloat(document.getElementById('pesoMoto').value) || 0;
         let pesoP = parseFloat(document.getElementById('pesoPiloto').value) || 0;
-        
         let tipo = document.getElementById('tipoMoto').value;
         let estilo = document.getElementById('estilo').value;
         let temp = parseFloat(document.getElementById('temp').value);
-        
         let vientoFrontal = parseFloat(document.getElementById('viento').value); 
         let trafico = document.getElementById('trafico').value; 
         let terreno = document.getElementById('terreno').value;
         let regeneracion = document.getElementById('regeneracion').value;
 
-        // --- CONSTANTES FÍSICAS ---
-        const g = 9.81;
-        const densidadAire = 1.225;
-        let masaTotal = pesoM + pesoP;
-        
-        // 1. VELOCIDAD Y CLASE DE VEHÍCULO
+        const g = 9.81; const densidadAire = 1.225; let masaTotal = pesoM + pesoP;
         let velMedia = velocidadMediaCalculada;
+        if (claseVehiculo === 'ciclomotor' && velMedia > 45) velMedia = 45; if (velMedia < 15) velMedia = 15; 
         
-        // LÍMITE CICLOMOTOR (45 km/h)
-        if (claseVehiculo === 'ciclomotor') {
-            if (velMedia > 45) velMedia = 45;
-        }
-
-        if (velMedia < 15) velMedia = 15; 
-        
-        // Factores de corrección por Tráfico
         let factorTraficoEficiencia = 1.0;
+        if (trafico === 'medium') { velMedia *= 0.85; factorTraficoEficiencia = 0.95; } else if (trafico === 'high') { velMedia *= 0.60; factorTraficoEficiencia = 0.80; }
+        if (estilo === 'sport') velMedia *= 1.2; if (claseVehiculo === 'ciclomotor' && velMedia > 45) velMedia = 45; 
 
-        if (trafico === 'medium') {
-            velMedia = velMedia * 0.85; 
-            factorTraficoEficiencia = 0.95; 
-        } else if (trafico === 'high') {
-            velMedia = velMedia * 0.60; 
-            factorTraficoEficiencia = 0.80; 
-        }
+        let velMs = velMedia / 3.6; let velVientoMs = vientoFrontal / 3.6; 
+        let CdA = (tipo === 'scooter') ? 0.40 : ((tipo === 'cross') ? 0.60 : 0.45);
+        let Crr = 0.018; let slope = (terreno === 'hilly') ? 0.015 : ((terreno === 'mountain') ? 0.04 : 0);
 
-        // Ajuste por estilo
-        if (estilo === 'sport') velMedia *= 1.2;
-
-        // Re-check de límite legal tras ajustes para ciclomotor
-        if (claseVehiculo === 'ciclomotor' && velMedia > 45) {
-            velMedia = 45; 
-        }
-
-        let velMs = velMedia / 3.6; 
-        let velVientoMs = vientoFrontal / 3.6; 
-
-        // 2. Coeficiente Aerodinámico (CdA)
-        let CdA = 0.45; 
-        if (tipo === 'scooter') CdA = 0.40;
-        if (tipo === 'cross') CdA = 0.60; 
-
-        // 3. Resistencia a la rodadura (Crr)
-        let Crr = 0.018; 
-
-        // 4. Factor Terreno
-        let slope = 0; 
-        if (terreno === 'hilly') slope = 0.015; 
-        if (terreno === 'mountain') slope = 0.04; 
-
-        // --- CÁLCULO DE POTENCIA ---
         let pRodadura = masaTotal * g * Crr * velMs;
         let pAero = 0.5 * densidadAire * CdA * Math.pow((velMs + velVientoMs), 3);
         let pPendiente = masaTotal * g * slope * velMs;
-
         let potenciaMecanica = pRodadura + pAero + pPendiente;
-
-        // --- EFICIENCIA ---
-        let eficiencia = 0.90; 
-        eficiencia *= factorTraficoEficiencia;
+        let eficiencia = 0.90 * factorTraficoEficiencia;
 
         let cargaMotor = potenciaMecanica / potenciaNominal;
-        if (cargaMotor < 0.15) eficiencia -= 0.05; 
+        if (cargaMotor < 0.15) eficiencia -= 0.05; if (estilo === 'sport') eficiencia -= 0.10; if (estilo === 'eco') eficiencia += 0.02;
 
-        if (estilo === 'sport') eficiencia -= 0.10; 
-        if (estilo === 'eco') eficiencia += 0.02;
-
-        let factorTemp = 1.0;
-        if (temp < 15) factorTemp = 1 - ((15 - temp) * 0.015); 
-        if (temp > 35) factorTemp = 0.98; 
-
+        let factorTemp = (temp < 15) ? (1 - ((15 - temp) * 0.015)) : ((temp > 35) ? 0.98 : 1.0);
         let factorRegen = 1.0;
-        if (terreno === 'hilly' || terreno === 'mountain') {
-            if (regeneracion === '1') factorRegen = 1.10; 
-            if (regeneracion === '2') factorRegen = 1.15; 
-        } else {
-             if (trafico === 'high' && regeneracion !== '0') factorRegen = 1.08;
-             else if (regeneracion === '2') factorRegen = 1.05;
-        }
+        if (terreno === 'hilly' || terreno === 'mountain') { if (regeneracion === '1') factorRegen = 1.10; if (regeneracion === '2') factorRegen = 1.15; } 
+        else { if (trafico === 'high' && regeneracion !== '0') factorRegen = 1.08; else if (regeneracion === '2') factorRegen = 1.05; }
 
-        // --- RESULTADO ---
         let potenciaElectrica = potenciaMecanica / eficiencia;
-        let consumoWhKm = (potenciaElectrica / velMedia); 
-
-        if (consumoWhKm < 15) consumoWhKm = 15; 
+        let consumoWhKm = (potenciaElectrica / velMedia); if (consumoWhKm < 15) consumoWhKm = 15; 
 
         let energiaDisponible = wh * factorTemp * 0.95 * factorRegen; 
-
         let autonomiaEstimada = energiaDisponible / consumoWhKm;
         let kmRestantes = autonomiaEstimada - rutaDistanciaKm;
 
-        // Aviso potencia / Vía rápida
         let advertenciaPotencia = "";
-        
-        if (claseVehiculo === 'ciclomotor') {
-            if (velocidadMediaCalculada > 60) {
-                 advertenciaPotencia = "<br><small style='color:#d97706'>⚠️ Aviso: La ruta original es muy rápida (autopista). El cálculo asume que vas por vías lentas (máx 45km/h).</small>";
-            }
-        } else {
-            if (potenciaMecanica > (potenciaNominal * 1.5)) {
-                advertenciaPotencia = "<br><small style='color:#dc2626'>⚠️ Aviso: La ruta exige mucha potencia para este motor.</small>";
-            }
-        }
+        if (claseVehiculo === 'ciclomotor' && velocidadMediaCalculada > 60) advertenciaPotencia = "<br><small style='color:#d97706'>⚠️ Aviso: La ruta es de autopista. Calculado a máx 45km/h.</small>";
+        else if (potenciaMecanica > (potenciaNominal * 1.5)) advertenciaPotencia = "<br><small style='color:#dc2626'>⚠️ Aviso: La ruta exige demasiada potencia para este motor.</small>";
 
-        let resBox = document.getElementById('resultado');
-        let resTitulo = document.getElementById('resTitulo');
-        let resMensaje = document.getElementById('resMensaje');
-        
+        let resBox = document.getElementById('resultado'); let resTitulo = document.getElementById('resTitulo'); let resMensaje = document.getElementById('resMensaje');
         resBox.style.display = 'block';
 
         if (kmRestantes >= 0) {
             let porcentajeRestante = Math.round((kmRestantes / autonomiaEstimada) * 100);
-            resBox.className = 'res-success';
-            resTitulo.innerHTML = "✅ LLEGAS AL DESTINO";
-            resMensaje.innerHTML = `
-                Consumo est: <strong>${Math.round(consumoWhKm)} Wh/km</strong><br>
-                Batería sobrante: <strong>${porcentajeRestante}%</strong> (aprox. ${Math.round(kmRestantes)} km extra).
-                ${advertenciaPotencia}
-            `;
+            resBox.className = 'res-success'; resTitulo.innerHTML = "✅ LLEGAS AL DESTINO";
+            resMensaje.innerHTML = `Consumo: <strong>${Math.round(consumoWhKm)} Wh/km</strong><br>Batería sobrante: <strong>${porcentajeRestante}%</strong> (${Math.round(kmRestantes)} km extra).${advertenciaPotencia}`;
         } else {
-            resBox.className = 'res-fail';
-            resTitulo.innerHTML = "❌ NO LLEGAS";
-            resMensaje.innerHTML = `
-                Te faltan <strong>${Math.abs(Math.round(kmRestantes))} km</strong>.<br>
-                Consumo est: <strong>${Math.round(consumoWhKm)} Wh/km</strong>.<br>
-                Intenta bajar la velocidad o evitar tráfico denso.
-                ${advertenciaPotencia}
-            `;
+            resBox.className = 'res-fail'; resTitulo.innerHTML = "❌ NO LLEGAS";
+            resMensaje.innerHTML = `Te faltan <strong>${Math.abs(Math.round(kmRestantes))} km</strong>.<br>Consumo: <strong>${Math.round(consumoWhKm)} Wh/km</strong>.${advertenciaPotencia}`;
         }
     }
 </script>
