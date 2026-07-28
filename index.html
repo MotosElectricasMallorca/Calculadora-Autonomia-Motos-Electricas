@@ -89,6 +89,15 @@ input{font-family:inherit;}
 .leaflet-routing-container{display:none !important;}
 .leaflet-control-geocoder{ box-shadow:var(--shadow-md) !important; border-radius:10px !important; overflow:hidden;}
 
+.chargers-badge{
+  position:absolute; left:10px; top:66px; z-index:29; max-width:76%;
+  background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow-md);
+  font-size:10.5px; font-weight:700; color:var(--text-2); padding:6px 10px; border-radius:20px;
+  display:none; align-items:center; gap:6px; line-height:1.3;
+}
+.chargers-badge.ok{ color:var(--brand); }
+.chargers-badge .spinner{width:10px;height:10px;border-radius:50%; border:2px solid var(--border-strong); border-top-color:var(--brand); animation:spin .7s linear infinite; flex:none;}
+
 /* ---------- TABS ---------- */
 .tabbar{
   position:sticky; top:60px; z-index:35; background:var(--page); padding:10px 16px 0 16px;
@@ -186,11 +195,13 @@ input{font-family:inherit;}
   position:fixed; left:0; right:0; bottom:0; z-index:50; background:var(--surface); border-top:1px solid var(--border);
   padding:10px 16px calc(12px + env(safe-area-inset-bottom,0px)) 16px; box-shadow:0 -8px 24px rgba(11,11,11,.08);
 }
-.bottom-cta-inner{max-width:640px; margin:0 auto; display:flex; align-items:center; gap:12px;}
+.bottom-cta-inner{max-width:640px; margin:0 auto; display:flex; flex-direction:column; gap:8px;}
+.bottom-cta-top{display:flex; align-items:center; justify-content:space-between; gap:12px;}
 .bottom-cta .route-mini{font-size:11px; color:var(--muted); font-weight:700; flex:none; min-width:78px; line-height:1.3;}
 .bottom-cta .route-mini b{display:block; font-size:14px; color:var(--text);}
+.ida-vuelta-toggle{display:flex; align-items:center; gap:8px; font-size:12px; font-weight:700; color:var(--text-2); cursor:pointer;}
 .cta-btn{
-  flex:1; border:none; background:var(--brand); color:#fff; font-weight:800; font-size:14.5px; padding:14px;
+  width:100%; border:none; background:var(--brand); color:#fff; font-weight:800; font-size:14.5px; padding:14px;
   border-radius:14px; cursor:pointer; box-shadow:var(--shadow-md); letter-spacing:.2px;
 }
 .cta-btn:disabled{background:var(--surface-2); color:var(--muted); box-shadow:none; cursor:not-allowed;}
@@ -249,6 +260,60 @@ input{font-family:inherit;}
   .bottom-cta{position:sticky; box-shadow:none;}
   .panels{padding-bottom:20px;}
 }
+
+/* ---------- AUTO/MANUAL TOGGLE ---------- */
+.card-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
+.card-header h3{margin:0;}
+.switch{position:relative; width:38px; height:22px; flex:none;}
+.switch input{opacity:0; width:0; height:0; position:absolute;}
+.switch .track{position:absolute; inset:0; background:var(--border-strong); border-radius:20px; cursor:pointer; transition:.2s;}
+.switch .track::before{content:''; position:absolute; width:16px; height:16px; left:3px; top:3px; background:var(--surface); border-radius:50%; transition:.2s; box-shadow:var(--shadow-sm);}
+.switch input:checked + .track{background:var(--brand);}
+.switch input:checked + .track::before{transform:translateX(16px);}
+.switch-row{display:flex; align-items:center; gap:8px; font-size:11.5px; font-weight:700; color:var(--text-2);}
+
+.auto-status{font-size:11.5px; color:var(--text-2); margin-top:10px; padding:8px 10px; border-radius:9px; background:var(--surface-2); display:flex; align-items:center; gap:6px; line-height:1.4;}
+.auto-status.ok{color:var(--good);}
+.auto-status .spinner{width:11px;height:11px;border-radius:50%; border:2px solid var(--border-strong); border-top-color:var(--brand); animation:spin .7s linear infinite; flex:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.link-btn{background:none; border:none; color:var(--brand); font-weight:700; font-size:11.5px; cursor:pointer; padding:0; margin-top:8px;}
+
+/* ---------- FUEL BOX ---------- */
+.fuel-box{
+  display:flex; align-items:center; gap:12px; background:var(--surface-2); border:1px solid var(--border);
+  border-radius:12px; padding:12px; margin-bottom:14px;
+}
+.fuel-box .ic{font-size:26px; flex:none;}
+.fuel-box .txt{flex:1; font-size:12.5px; color:var(--text-2); line-height:1.4;}
+.fuel-box .txt b{color:var(--text); font-size:14.5px;}
+.fuel-box .info-i{flex:none; width:18px;height:18px;border-radius:50%; background:var(--border-strong); color:var(--text-2); font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; cursor:help;}
+
+/* ---------- CHARGERS ---------- */
+.chargers-box{background:var(--brand-tint); border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:12px;}
+.chargers-box h4{margin:0 0 8px 0; font-size:12px; font-weight:800; display:flex; align-items:center; gap:6px;}
+.charger-item{display:flex; justify-content:space-between; gap:8px; font-size:12px; padding:6px 0; border-top:1px solid var(--border);}
+.charger-item:first-of-type{border-top:none;}
+.charger-item .name{color:var(--text); font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.charger-item .dist{color:var(--brand); font-weight:800; flex:none;}
+
+/* ---------- COMPARAR ---------- */
+.compare-pick{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:6px;}
+.compare-pick select{
+  width:100%; padding:10px; border-radius:10px; border:1px solid var(--border-strong); background:var(--surface);
+  font-size:12.5px; font-weight:700; color:var(--text);
+}
+.vs-divider{text-align:center; font-size:11px; font-weight:800; color:var(--muted); margin:6px 0;}
+.compare-results{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;}
+.compare-card{border-radius:14px; padding:14px 10px; text-align:center; border:1.5px solid var(--border); background:var(--surface-2);}
+.compare-card.ok{border-color:var(--good); background:var(--good-tint);}
+.compare-card.bad{border-color:var(--critical); background:var(--critical-tint);}
+.compare-card .cc-name{font-weight:800; font-size:12.5px; margin-bottom:6px; min-height:32px; display:flex; align-items:center; justify-content:center;}
+.compare-card .cc-icon{font-size:26px;}
+.compare-card .cc-verdict{font-weight:900; font-size:12.5px; margin:6px 0 2px 0;}
+.compare-card .cc-verdict.ok{color:var(--good); background:none; border:none;}
+.compare-card .cc-verdict.bad{color:var(--critical); background:none; border:none;}
+.compare-card .cc-detail{font-size:11px; color:var(--text-2); line-height:1.4;}
+.compare-card .cc-stat{font-size:11px; color:var(--muted); margin-top:6px; font-weight:700;}
 </style>
 </head>
 <body>
@@ -270,8 +335,11 @@ input{font-family:inherit;}
         <div class="stat-pill"><b id="rutaTime">0 min</b><span>Tiempo</span></div>
         <div class="stat-pill"><b id="rutaVel">0 km/h</b><span>Vel. media</span></div>
       </div>
-      <div class="map-hint">🔍 Busca una calle o toca el mapa para marcar tu ruta</div>
+      <div class="map-hint" id="mapHint">🔍 Busca una calle o toca el mapa para fijar el inicio</div>
+      <div class="chargers-badge" id="chargersCountBadge" style="display:none;"></div>
       <div class="map-fabs">
+        <div class="fab" id="btnChargers" title="Ver cargadores cercanos" onclick="verCargadoresCerca()">⚡</div>
+        <div class="fab" id="btnLocate" title="Usar mi ubicación como inicio">📍</div>
         <div class="fab" id="btnClear" title="Borrar ruta">🗑️</div>
       </div>
     </div>
@@ -287,6 +355,9 @@ input{font-family:inherit;}
       </button>
       <button class="tab" data-tab="entorno" onclick="switchTab('entorno')">
         <span class="n">🌦️</span>Entorno<span class="done-dot"></span>
+      </button>
+      <button class="tab" data-tab="comparar" onclick="switchTab('comparar')">
+        <span class="n">⚖️</span>Comparar
       </button>
     </div>
 
@@ -333,8 +404,23 @@ input{font-family:inherit;}
 
       <!-- PANEL 3: ENTORNO -->
       <div class="panel" id="panel-entorno">
-        <div class="section-title">Condiciones de la ruta</div>
-        <p class="section-sub">Tráfico, temperatura, viento y desnivel cambian el consumo real frente al de ficha técnica.</p>
+        <div class="section-title">Entorno de tu ruta</div>
+        <p class="section-sub">Detecta el clima real al instante, o ajusta tráfico y viento a mano si lo prefieres.</p>
+
+        <div class="card" style="background:var(--brand-tint); border-color:transparent;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+            <div style="font-size:26px;">🌦️</div>
+            <div style="flex:1;">
+              <div style="font-weight:800; font-size:14px;">Detectar clima real automáticamente</div>
+              <div style="font-size:12px; color:var(--text-2);">Usa el tiempo de hoy en tu zona (o el inicio de tu ruta) para ajustar temperatura y viento al momento.</div>
+            </div>
+          </div>
+          <button class="cta-btn" onclick="detectarClima(true)">🔄 Detectar clima ahora</button>
+          <div class="auto-status" id="climaStatus" style="display:none;"></div>
+        </div>
+
+        <div class="section-title" style="font-size:15px; margin-top:20px;">Condiciones de la ruta</div>
+        <p class="section-sub">Tráfico y viento frontal cambian el consumo real frente al de ficha técnica. Puedes ajustarlos a mano cuando quieras.</p>
 
         <div class="card">
           <h3>Tráfico</h3>
@@ -362,14 +448,22 @@ input{font-family:inherit;}
             <button class="n-btn" data-key="viento" data-val="10"><span class="n">💨</span>Fuerte</button>
           </div>
         </div>
+      </div>
+
+      <!-- PANEL 4: COMPARAR -->
+      <div class="panel" id="panel-comparar">
+        <div class="section-title">Compara dos motos en tu ruta</div>
+        <p class="section-sub">Con la misma ruta y las mismas condiciones de conducción, ¿qué modelo te compensa más?</p>
 
         <div class="card">
-          <h3>Terreno</h3>
-          <div class="seg" id="seg-terreno">
-            <button class="n-btn active" data-key="terreno" data-val="flat"><span class="n">🛣️</span>Llano</button>
-            <button class="n-btn" data-key="terreno" data-val="hilly"><span class="n">🌄</span>Mixto</button>
-            <button class="n-btn" data-key="terreno" data-val="mountain"><span class="n">⛰️</span>Montaña</button>
+          <div class="compare-pick">
+            <select id="cmpA"></select>
+            <select id="cmpB"></select>
           </div>
+          <div class="vs-divider">VS</div>
+          <button class="cta-btn" style="margin-top:6px;" onclick="compararMotos()">Comparar en esta ruta</button>
+          <div class="compare-results" id="compareResults" style="display:none;"></div>
+          <button class="btn-secondary" id="cmpChargerLink" style="width:100%; margin-top:10px; display:none;" onclick="abrirOpenChargeMap()">⚡ Ver puntos de carga reales en Open Charge Map</button>
         </div>
       </div>
 
@@ -383,7 +477,16 @@ input{font-family:inherit;}
 
     <div class="bottom-cta">
       <div class="bottom-cta-inner">
-        <div class="route-mini"><b id="miniDist">0 km</b>de ruta marcada</div>
+        <div class="bottom-cta-top">
+          <div class="route-mini"><b id="miniDist">0 km</b>de ruta marcada</div>
+          <label class="ida-vuelta-toggle">
+            <span class="switch">
+              <input type="checkbox" id="idaYVuelta" onchange="onToggleIdaVuelta(this.checked)">
+              <span class="track"></span>
+            </span>
+            🔁 Ida y vuelta
+          </label>
+        </div>
         <button class="cta-btn" id="ctaBtn" onclick="calcularViabilidad()" disabled>Calcular autonomía</button>
       </div>
     </div>
@@ -423,6 +526,18 @@ input{font-family:inherit;}
       <span class="n">⚠️</span><span id="warningText"></span>
     </div>
 
+    <div class="fuel-box" id="fuelBox" style="display:none;">
+      <div class="ic">⛽</div>
+      <div class="txt"><b id="fuelLitros">—</b><br><span id="fuelDetalle"></span></div>
+      <div class="info-i" title="Estimación orientativa: se calcula una cilindrada de gasolina equivalente a partir de la potencia pico de la moto eléctrica (que suele ser bastante mayor que la potencia nominal continua) y el consumo medio de motos de gasolina de esa cilindrada.">ⓘ</div>
+    </div>
+
+    <div class="chargers-box" id="chargersBox" style="display:none;">
+      <h4>⚡ Cargadores cerca de donde se agotaría la batería</h4>
+      <div id="chargersList"></div>
+      <button class="link-btn" onclick="abrirOpenChargeMap()">🔗 Ver en Open Charge Map (tiempo real)</button>
+    </div>
+
     <div class="sheet-actions">
       <button class="btn-secondary" onclick="closeSheet()">Ajustar</button>
       <button class="btn-primary" onclick="borrarRuta(); closeSheet();">Nueva ruta</button>
@@ -430,7 +545,44 @@ input{font-family:inherit;}
   </div>
 </div>
 
+<!-- CARGADORES CERCANOS (acceso general, sin necesidad de ruta) -->
+<div class="overlay" id="chargersOverlay" onclick="if(event.target===this) closeChargersOverlay()">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <button class="sheet-close" onclick="closeChargersOverlay()">✕</button>
+
+    <div class="result-title" style="margin-top:6px;">⚡ Cargadores cerca de ti</div>
+    <p class="result-sub" id="chargersOverlaySub">—</p>
+
+    <div id="chargersOverlayList" style="margin-bottom:16px;"></div>
+
+    <div class="sheet-actions">
+      <button class="btn-secondary" onclick="closeChargersOverlay()">Cerrar</button>
+      <button class="btn-primary" onclick="abrirOpenChargeMap()">Ver en Open Charge Map</button>
+    </div>
+  </div>
+</div>
+
 <script>
+/* =====================================================================
+   CLAVE DE OPEN CHARGE MAP (necesaria — API gratuita, pero YA NO admite
+   consultas anónimas)
+   Open Charge Map cambió su política: todas las llamadas a /v3/poi/
+   ahora exigen una clave (X-API-Key), incluso para uso gratuito y
+   personal. Sin ella, TODAS las peticiones fallan siempre — por eso la
+   app decía constantemente "no se pudo consultar Open Charge Map" y no
+   cargaba ni un solo punto: no era un fallo de red ni de la app, es que
+   faltaba darse de alta.
+   Cómo conseguir la tuya (gratis, 1 minuto):
+     1) Crea una cuenta en https://openchargemap.org (botón "Sign In / Register").
+     2) Ve a tu perfil → "Registered Apps" / "API Keys" y crea una clave nueva.
+     3) Pega esa clave aquí abajo, entre las comillas.
+   Mientras el campo esté vacío, la app avisa con un mensaje claro en vez
+   de intentar la consulta (que fallaría siempre) o de repetir un error
+   genérico sin explicar la causa.
+===================================================================== */
+const OCM_API_KEY = '28bae740-9037-4f32-b3b4-77344aa9a032';
+
 /* =====================================================================
    DATOS DE MOTOS (idénticos a la calculadora original — misma fuente)
 ===================================================================== */
@@ -466,11 +618,11 @@ const MODELOS_MOTO = {
   velca_tramontana_s:         { marca:"Velca",           nombre:"Velca Tramontana S",       claseVehiculo:"moto",       capacidadWh:3024,  potenciaW:5000,  pesoMoto:83,  tipoMoto:"scooter", regeneracion:"0" },
   velca_vortex:                { marca:"Velca",          nombre:"Velca Vortex",             claseVehiculo:"moto",       capacidadWh:8200,  potenciaW:8000,  pesoMoto:199, tipoMoto:"naked",   regeneracion:"0" },
   zero_ds:                    { marca:"Zero Motorcycles",nombre:"Zero DS",                  claseVehiculo:"moto",       capacidadWh:15600, potenciaW:11000, pesoMoto:223, tipoMoto:"naked",   regeneracion:"1" },
-  zero_dsrx_a:                { marca:"Zero Motorcycles",nombre:"Zero DSR/X (A)",           claseVehiculo:"moto",       capacidadWh:17300, potenciaW:36000, pesoMoto:247, tipoMoto:"naked",   regeneracion:"1" },
-  zero_dsrx_black_forest:     { marca:"Zero Motorcycles",nombre:"Zero DSR/X Black Forest",  claseVehiculo:"moto",       capacidadWh:17300, potenciaW:36000, pesoMoto:247, tipoMoto:"naked",   regeneracion:"1" },
+  zero_dsrx_a:                { marca:"Zero Motorcycles",nombre:"Zero DSR/X (A)",           claseVehiculo:"moto",       capacidadWh:17300, potenciaW:36000, pesoMoto:247, tipoMoto:"naked",   regeneracion:"1", picoKwReal:83, ccEquivalenteManual:1000 },
+  zero_dsrx_black_forest:     { marca:"Zero Motorcycles",nombre:"Zero DSR/X Black Forest",  claseVehiculo:"moto",       capacidadWh:17300, potenciaW:36000, pesoMoto:247, tipoMoto:"naked",   regeneracion:"1", picoKwReal:83, ccEquivalenteManual:1000 },
   zero_fxe:                   { marca:"Zero Motorcycles",nombre:"Zero FXE",                 claseVehiculo:"moto",       capacidadWh:7200,  potenciaW:11000, pesoMoto:130, tipoMoto:"cross",   regeneracion:"1" },
   zero_s:                     { marca:"Zero Motorcycles",nombre:"Zero S",                   claseVehiculo:"moto",       capacidadWh:15600, potenciaW:11000, pesoMoto:223, tipoMoto:"naked",   regeneracion:"1" },
-  zero_srf:                    { marca:"Zero Motorcycles",nombre:"Zero SR/F",                claseVehiculo:"moto",       capacidadWh:17300, potenciaW:40000, pesoMoto:227, tipoMoto:"naked",   regeneracion:"1" },
+  zero_srf:                    { marca:"Zero Motorcycles",nombre:"Zero SR/F",                claseVehiculo:"moto",       capacidadWh:17300, potenciaW:40000, pesoMoto:227, tipoMoto:"naked",   regeneracion:"1", picoKwReal:83, ccEquivalenteManual:1000 },
   zero_xb:                     { marca:"Zero Motorcycles",nombre:"Zero XB",                  claseVehiculo:"ciclomotor", capacidadWh:2400,  potenciaW:4000,  pesoMoto:63,  tipoMoto:"cross",   regeneracion:"1" },
   zero_xe:                     { marca:"Zero Motorcycles",nombre:"Zero XE",                  claseVehiculo:"moto",       capacidadWh:4300,  potenciaW:11000, pesoMoto:101, tipoMoto:"cross",   regeneracion:"1" }
 };
@@ -483,18 +635,97 @@ function estimacionRapida(m){
 }
 
 /* =====================================================================
+   EQUIVALENTE EN GASOLINA
+   Las motos eléctricas de este listado tienen una potencia PICO real
+   bastante superior a la potencia nominal/continua que usamos en el
+   modelo físico (así funcionan los motores eléctricos). Para estimar
+   "a qué moto de gasolina equivaldría", primero inflamos la potencia
+   nominal a una potencia pico aproximada, y luego la convertimos a
+   cilindrada usando una densidad de potencia media de motores de
+   gasolina de calle (no motores de competición muy exprimidos).
+   Es una estimación orientativa, no un dato de laboratorio.
+===================================================================== */
+const FUEL_PEAK_FACTOR = 1.6;   // potencia pico ≈ 1.6x la potencia nominal del modelo (estimación genérica)
+const FUEL_CC_PER_KW = 11;      // cc por kW pico en un motor de gasolina de calle "medio"
+// Para modelos donde se conoce la potencia pico REAL (dato de ficha técnica, no estimada),
+// o directamente la cilindrada equivalente que se considera más ajustada por aceleración/par,
+// MODELOS_MOTO puede llevar "picoKwReal" y/o "ccEquivalenteManual" — tienen prioridad sobre
+// la estimación genérica anterior.
+function ccEquivalente(potenciaW, picoKwReal, ccManual){
+  if(ccManual) return ccManual;
+  const picoKw = picoKwReal || ((potenciaW/1000) * FUEL_PEAK_FACTOR);
+  return Math.max(50, Math.round((picoKw * FUEL_CC_PER_KW)/25)*25);
+}
+function consumoGasolinaPorCC(cc){
+  if(cc<=125) return 3.0;
+  if(cc<=250) return 3.4;
+  if(cc<=400) return 3.8;
+  if(cc<=600) return 4.5;
+  if(cc<=800) return 5.2;
+  if(cc<=1000) return 6.0;
+  if(cc<=1300) return 6.8;
+  return 7.5;
+}
+function equivalenteGasolina(potenciaW, rutaKm, picoKwReal, ccManual){
+  const cc = ccEquivalente(potenciaW, picoKwReal, ccManual);
+  const consumo = consumoGasolinaPorCC(cc);
+  const litros = consumo * (rutaKm/100);
+  return { cc, consumo, litros };
+}
+
+/* =====================================================================
    ESTADO
 ===================================================================== */
 const state = {
   motoId: "stark_varg_ex",
   custom: { claseVehiculo:"moto", capacidadWh:5000, potenciaW:8000, pesoMoto:130, tipoMoto:"naked", regeneracion:"1" },
   pesoPiloto: 85, estilo: "normal",
-  trafico: "low", temp: 20, viento: 0, terreno: "flat"
+  trafico: "low", temp: 20, viento: 0,
+  idaYVuelta: false
 };
 
 function getVehicleSpecs(){
   if(state.motoId === "custom") return state.custom;
   return MODELOS_MOTO[state.motoId];
+}
+
+/* =====================================================================
+   PERSISTENCIA (recordar última moto y ajustes)
+   Usa localStorage de forma defensiva: si no está disponible (bloqueado,
+   modo incógnito, vista previa embebida, etc.) la app simplemente no
+   recuerda nada — nunca falla por ello. Funciona con normalidad cuando
+   abres el archivo directamente en tu navegador o lo añades a la
+   pantalla de inicio de tu Android.
+===================================================================== */
+const PREFS_KEY = 'autonomiamoto_prefs_v1';
+function guardarPreferencias(){
+  try{
+    localStorage.setItem(PREFS_KEY, JSON.stringify({
+      motoId: state.motoId, custom: state.custom, pesoPiloto: state.pesoPiloto, estilo: state.estilo,
+      trafico: state.trafico, temp: state.temp, viento: state.viento,
+      idaYVuelta: state.idaYVuelta
+    }));
+  }catch(e){ /* almacenamiento no disponible: no pasa nada */ }
+}
+function cargarPreferencias(){
+  try{
+    const raw = localStorage.getItem(PREFS_KEY);
+    if(!raw) return;
+    const prefs = JSON.parse(raw);
+    Object.assign(state, prefs);
+    if(prefs.custom) Object.assign(state.custom, prefs.custom);
+  }catch(e){ /* almacenamiento no disponible: seguimos con los valores por defecto */ }
+}
+function reflectStateToUI(){
+  const pesoEl = document.getElementById('pesoPiloto'); if(pesoEl) pesoEl.value = state.pesoPiloto;
+  const tempEl = document.getElementById('temp'); if(tempEl) tempEl.value = state.temp;
+  const idaVueltaEl = document.getElementById('idaYVuelta'); if(idaVueltaEl) idaVueltaEl.checked = state.idaYVuelta;
+  actualizarMiniDist();
+  [['estilo',state.estilo],['trafico',state.trafico],['viento',String(state.viento)]].forEach(([key,val])=>{
+    document.querySelectorAll(`.n-btn[data-key="${key}"]`).forEach(b=>{
+      b.classList.toggle('active', b.dataset.val===val);
+    });
+  });
 }
 
 /* =====================================================================
@@ -584,10 +815,12 @@ function selectMoto(id){
   state.motoId = id;
   renderMotoList();
   markTabComplete('moto');
+  guardarPreferencias();
 }
 
 function updateCustom(key, val){
   state.custom[key] = (key==='claseVehiculo') ? val : parseFloat(val)||0;
+  guardarPreferencias();
 }
 
 /* =====================================================================
@@ -606,13 +839,33 @@ function bindSegButtons(){
         if(key==='viento') state.viento = parseFloat(val);
       }
       if(['estilo'].includes(key)) markTabComplete('ritmo');
-      if(['trafico','viento','terreno'].includes(key)) markTabComplete('entorno');
+      if(['trafico','viento'].includes(key)) markTabComplete('entorno');
+      guardarPreferencias();
     };
   });
 }
 
 function markTabComplete(tab){
   document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('complete');
+}
+
+/* =====================================================================
+   IDA Y VUELTA
+   Un trayecto se puede calcular solo con inicio+destino (ida). Este
+   interruptor evita tener que dibujar a mano el camino de vuelta: si
+   está activado, se calcula con el doble de la distancia trazada,
+   asumiendo que la vuelta es por la misma carretera.
+===================================================================== */
+function actualizarMiniDist(){
+  const el = document.getElementById('miniDist');
+  if(!el) return;
+  const efectiva = rutaDistanciaKm * (state.idaYVuelta ? 2 : 1);
+  el.innerText = efectiva.toFixed(1) + ' km';
+}
+function onToggleIdaVuelta(checked){
+  state.idaYVuelta = checked;
+  actualizarMiniDist();
+  guardarPreferencias();
 }
 
 /* =====================================================================
@@ -631,19 +884,39 @@ function stepValue(id, delta){
   let v = (parseFloat(el.value)||0) + delta;
   el.value = v;
   state[id] = v;
+  guardarPreferencias();
 }
 document.addEventListener('input', (e)=>{
-  if(e.target.id==='pesoPiloto') state.pesoPiloto = parseFloat(e.target.value)||0;
-  if(e.target.id==='temp') state.temp = parseFloat(e.target.value);
+  if(e.target.id==='pesoPiloto'){ state.pesoPiloto = parseFloat(e.target.value)||0; guardarPreferencias(); }
+  if(e.target.id==='temp'){ state.temp = parseFloat(e.target.value); guardarPreferencias(); }
   if(e.target.id==='motoSearch'){ searchText = e.target.value; renderMotoList(); }
 });
 
 /* =====================================================================
+   Variables de ruta/mapa — declaradas ANTES del bloque INIT porque
+   reflectStateToUI() (llamada en el INIT) ya necesita leer rutaDistanciaKm
+   a través de actualizarMiniDist(). Si se declaran más tarde, un `let`
+   referenciado antes de su propia línea revienta TODO el script con un
+   ReferenceError y ni siquiera el mapa llega a intentar cargar.
+===================================================================== */
+var map, control, geocoder, chargersLayer, chargersLiveLayer;
+let rutaDistanciaKm = 0;
+let velocidadMediaCalculada = 0;
+let ultimaRutaCoords = null;
+const CHARGERS_LIVE_MIN_ZOOM = 11;
+let chargersLiveTimer = null;
+let chargersLiveController = null;
+let ultimoPuntoCargadores = null;
+
+/* =====================================================================
    INIT UI (independiente del mapa: la app funciona aunque el mapa falle)
 ===================================================================== */
+cargarPreferencias();
 renderBrandChips();
 renderMotoList();
 bindSegButtons();
+reflectStateToUI();
+poblarSelectoresComparar();
 
 /* =====================================================================
    MAPA + RUTA (misma lógica que la calculadora original)
@@ -651,9 +924,47 @@ bindSegButtons();
    cargan (sin conexión, red bloqueada, etc.) el resto de la app —
    selección de moto, pestañas, cálculo— sigue funcionando igual.
 ===================================================================== */
-var map, control, geocoder;
-let rutaDistanciaKm = 0;
-let velocidadMediaCalculada = 0;
+
+function updateMapHint(){
+  const hintEl = document.getElementById('mapHint');
+  if(!hintEl) return;
+  const wps = (control ? control.getWaypoints() : []).filter(wp=>wp.latLng);
+  if(wps.length===0) hintEl.textContent = '🔍 Busca una calle o toca el mapa para fijar el inicio';
+  else if(wps.length===1) hintEl.textContent = '🏁 Ahora toca el destino';
+  else hintEl.textContent = '📍 Toca para añadir paradas, o mantén un punto para borrarlo';
+}
+
+/* Leaflet Routing Machine SIEMPRE mantiene un mínimo de 2 "huecos" de waypoint
+   internamente (aunque se construya con waypoints:[]). Por eso hay que
+   REEMPLAZAR el hueco vacío de inicio/destino (spliceWaypoints con
+   toRemove=1) en vez de INSERTAR uno nuevo (toRemove=0) — insertar deja un
+   hueco vacío colgando al final que impide que se calcule la ruta hasta
+   que ese hueco se reemplaza por otro punto (que es justo lo que hacía sin
+   querer el antiguo botón de "cerrar círculo", y por eso solo "funcionaba"
+   cerrando el círculo). Con el reemplazo correcto, la ruta se calcula ya
+   con el 2º toque. */
+function agregarPuntoRuta(latlng){
+  if(!control) return;
+  var all = control.getWaypoints();
+  var defCount = all.filter(function(w){ return w.latLng; }).length;
+  if (defCount === 0) control.spliceWaypoints(0, 1, latlng);                    // fija el inicio
+  else if (defCount === 1) control.spliceWaypoints(all.length - 1, 1, latlng);  // fija el destino
+  else control.spliceWaypoints(all.length - 1, 0, latlng);                     // añade una parada antes del destino
+  updateMapHint();
+}
+
+document.getElementById('btnLocate').onclick = function(){
+  if(!navigator.geolocation){ alert('Tu navegador no soporta geolocalización.'); return; }
+  if(!control){ alert('⚠️ El mapa no se ha cargado. Recarga la página o comprueba tu conexión.'); return; }
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var latlng = L.latLng(pos.coords.latitude, pos.coords.longitude);
+    control.spliceWaypoints(0, 1, latlng); // siempre reemplaza el inicio (índice 0 existe siempre)
+    map.setView(latlng, 14);
+    updateMapHint();
+  }, function(){
+    alert('No se pudo obtener tu ubicación. Comprueba los permisos de localización del navegador.');
+  }, { enableHighAccuracy:true, timeout:8000 });
+};
 
 try {
 
@@ -671,6 +982,9 @@ L.Control.geocoder({
   L.popup().setLatLng(e.geocode.center).setContent("<b>" + e.geocode.name + "</b><br>Toca el mapa para marcar.").openOn(map);
 }).addTo(map);
 
+chargersLayer = L.layerGroup().addTo(map);
+chargersLiveLayer = L.layerGroup().addTo(map);
+
 control = L.Routing.control({
   waypoints: [], routeWhileDragging: true, language: 'es', geocoder: geocoder,
   createMarker: function(i, wp, nWps) { return L.marker(wp.latLng, { draggable: true }); }
@@ -684,9 +998,19 @@ control.on('routesfound', function(e) {
   document.getElementById('rutaDist').innerText = rutaDistanciaKm.toFixed(1) + " km";
   document.getElementById('rutaTime').innerText = Math.round(summary.totalTime / 60) + " min";
   document.getElementById('rutaVel').innerText = Math.round(velocidadMediaCalculada) + " km/h";
-  document.getElementById('miniDist').innerText = rutaDistanciaKm.toFixed(1) + " km";
+  actualizarMiniDist();
   document.getElementById('ctaBtn').disabled = false;
+  updateMapHint();
+
+  ultimaRutaCoords = e.routes[0].coordinates;
+  const inicio = e.routes[0].coordinates[0];
+  detectarClima(false, inicio.lat, inicio.lng);
+  actualizarCargadoresEnMapa();
 });
+
+control.on('waypointschanged', updateMapHint);
+map.on('moveend', actualizarCargadoresEnMapa);
+actualizarCargadoresEnMapa();
 
 map.on('click', function(e) {
   var clickLatLng = e.latlng;
@@ -701,32 +1025,18 @@ map.on('click', function(e) {
     }
   }
 
-  var container = L.DomUtil.create('div');
-
   if (indexToDelete !== -1) {
+    // Punto ya existente: único menú posible es borrarlo. La vuelta ya no se
+    // hace "cerrando el círculo" a mano — solo con el interruptor de Ida y vuelta.
+    var container = L.DomUtil.create('div');
     var delBtn = createButton('🗑️ Borrar este punto', container, '#d03b3b');
-    L.DomEvent.on(delBtn, 'click', function() { control.spliceWaypoints(indexToDelete, 1); map.closePopup(); });
-    if (indexToDelete === 0 && waypoints.length > 1) {
-      var loopBtn = createButton('🔄 Cerrar círculo', container, '#4a3aa7');
-      L.DomEvent.on(loopBtn, 'click', function() { control.spliceWaypoints(waypoints.length - 1, 1, waypoints[0].latLng); map.closePopup(); });
-    }
+    L.DomEvent.on(delBtn, 'click', function() { control.spliceWaypoints(indexToDelete, 1); map.closePopup(); updateMapHint(); });
     L.popup().setContent(container).setLatLng(waypoints[indexToDelete].latLng).openOn(map);
-  } else {
-    var startBtn = createButton('🏁 Fijar inicio', container, '#2a78d6');
-    var stopBtn = createButton('📍 Añadir parada', container, '#eda100');
-    var destBtn = createButton('🏁 Fijar destino', container, '#1baf7a');
-    var clearAllBtn = createButton('🗑️ Borrar ruta completa', container, '#898781');
-
-    L.popup().setContent(container).setLatLng(clickLatLng).openOn(map);
-
-    L.DomEvent.on(startBtn, 'click', function() { control.spliceWaypoints(0, 1, clickLatLng); map.closePopup(); });
-    L.DomEvent.on(stopBtn, 'click', function() {
-      var wps = control.getWaypoints(); var insertIndex = Math.max(1, wps.length - 1);
-      control.spliceWaypoints(insertIndex, 0, clickLatLng); map.closePopup();
-    });
-    L.DomEvent.on(destBtn, 'click', function() { var wps = control.getWaypoints(); control.spliceWaypoints(wps.length - 1, 1, clickLatLng); map.closePopup(); });
-    L.DomEvent.on(clearAllBtn, 'click', function() { borrarRuta(); map.closePopup(); });
+    return;
   }
+
+  // Toque sobre mapa vacío: sin menús — 1er toque=inicio, 2º=destino, siguientes=paradas
+  agregarPuntoRuta(clickLatLng);
 });
 
 function createButton(label, container, bgColor) {
@@ -741,13 +1051,16 @@ function createButton(label, container, bgColor) {
 function borrarRuta() {
   if (control) control.setWaypoints([]);
   rutaDistanciaKm = 0;
+  ultimaRutaCoords = null;
   document.getElementById('rutaDist').innerText = "0 km";
   document.getElementById('rutaTime').innerText = "0 min";
   document.getElementById('rutaVel').innerText = "0 km/h";
-  document.getElementById('miniDist').innerText = "0 km";
+  actualizarMiniDist();
   document.getElementById('ctaBtn').disabled = true;
+  setClimaStatus('', false, true);
+  if(chargersLayer) chargersLayer.clearLayers();
+  updateMapHint();
 }
-document.getElementById('btnClear').onclick = borrarRuta;
 
 } catch (err) {
   console.error('No se pudo inicializar el mapa:', err);
@@ -755,15 +1068,355 @@ document.getElementById('btnClear').onclick = borrarRuta;
     '<div style="height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;font-size:13px;color:var(--muted);font-weight:600;line-height:1.5;">⚠️ No se pudo cargar el mapa.<br>Comprueba tu conexión a internet y recarga la página.<br>El resto de la calculadora funciona igual.</div>';
   document.querySelector('.map-hint').style.display = 'none';
 }
+document.getElementById('btnClear').onclick = borrarRuta;
+
+/* =====================================================================
+   AUTOCOMPLETAR CLIMA (Open-Meteo, gratis, sin API key)
+   Botón destacado y visible en todo momento arriba de la pestaña
+   Entorno. Prioriza la ruta marcada; si aún no hay ruta, intenta usar
+   la ubicación real del usuario (geolocalización) para poder fijar un
+   entorno "real" (p.ej. el de hoy mismo) sin tener que marcar nada.
+===================================================================== */
+function setClimaStatus(msg, ok, hide){
+  const el = document.getElementById('climaStatus');
+  if(!el) return;
+  if(hide){ el.style.display='none'; return; }
+  el.style.display='flex';
+  el.className = 'auto-status' + (ok?' ok':'');
+  el.innerHTML = msg;
+}
+function detectarClima(forzado, lat, lng){
+  if(lat===undefined || lng===undefined){
+    const wps = control ? control.getWaypoints().filter(w=>w.latLng) : [];
+    if(wps.length>0){
+      buscarClima(wps[0].latLng.lat, wps[0].latLng.lng);
+      return;
+    }
+    // Sin ruta marcada todavía: probamos con la ubicación real del usuario,
+    // para que el botón sirva igual aunque no se haya trazado nada aún.
+    if(navigator.geolocation){
+      setClimaStatus('<span class="spinner"></span> Localizándote para detectar el clima...', false);
+      navigator.geolocation.getCurrentPosition(function(pos){
+        buscarClima(pos.coords.latitude, pos.coords.longitude);
+      }, function(){
+        setClimaStatus('⚠️ No se pudo obtener tu ubicación. Marca una ruta en el mapa o revisa los permisos de localización.', false);
+      }, { enableHighAccuracy:true, timeout:8000 });
+      return;
+    }
+    setClimaStatus('⚠️ Marca primero una ruta en el mapa (tu navegador no soporta geolocalización).', false);
+    return;
+  }
+  buscarClima(lat, lng);
+}
+async function buscarClima(lat, lng){
+  setClimaStatus('<span class="spinner"></span> Detectando el clima de la zona...', false);
+  try{
+    const controller = new AbortController();
+    const timeout = setTimeout(()=>controller.abort(), 7000);
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,wind_speed_10m`;
+    const resp = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeout);
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    const t = Math.round(data.current.temperature_2m);
+    const windKmh = data.current.wind_speed_10m;
+    let vientoVal = 0, vientoTxt = 'sin apenas viento';
+    if(windKmh > 25){ vientoVal = 10; vientoTxt = 'viento fuerte'; }
+    else if(windKmh > 10){ vientoVal = 5; vientoTxt = 'brisa'; }
+
+    state.temp = t; state.viento = vientoVal;
+    const tempEl = document.getElementById('temp'); if(tempEl) tempEl.value = t;
+    document.querySelectorAll('.n-btn[data-key="viento"]').forEach(b=>b.classList.toggle('active', parseFloat(b.dataset.val)===vientoVal));
+    setClimaStatus(`✅ Clima detectado: <b>${t}°C</b>, ${vientoTxt}`, true);
+    guardarPreferencias();
+  }catch(err){
+    console.error('No se pudo detectar el clima automáticamente:', err);
+    setClimaStatus('⚠️ No se pudo detectar el clima automáticamente. Ajusta temperatura y viento a mano.', false);
+  }
+}
+
+/* =====================================================================
+   Ayudas comunes para llamar a Open Charge Map con la clave configurada
+   arriba (OCM_API_KEY). Si no hay clave, ni siquiera se intenta la
+   llamada — se avisa directamente, porque sin clave siempre falla.
+===================================================================== */
+function ocmFaltaClave(){ return !OCM_API_KEY || !OCM_API_KEY.trim(); }
+function ocmFetchOptions(signal){ return { signal, headers: { 'X-API-Key': OCM_API_KEY } }; }
+const OCM_MSG_FALTA_CLAVE = '⚠️ Falta configurar una clave gratuita de Open Charge Map (ver comentario OCM_API_KEY al principio del código) — sin ella el servicio rechaza todas las consultas.';
+
+/* =====================================================================
+   CARGADORES VISIBLES EN TODO EL MAPA (tiempo real, capa siempre activa)
+   Muestra automáticamente en el mapa TODOS los cargadores reales de
+   Open Charge Map dentro de la zona que se está viendo — a la vez que
+   el usuario está seleccionando su ruta (arrastrando el mapa o tocando
+   puntos), no solo después de calcular. Se refresca solo, con un
+   pequeño margen (debounce) cada vez que el mapa deja de moverse —
+   incluido el "vuelo" automático que hace la propia ruta al calcularse.
+   Con el mapa muy alejado (todo Mallorca o más) no se pide nada: habría
+   demasiados puntos y peticiones enormes, así que se pide acercarse.
+===================================================================== */
+function actualizarCargadoresEnMapa(){
+  if(!map || !chargersLiveLayer) return;
+  clearTimeout(chargersLiveTimer);
+  chargersLiveTimer = setTimeout(cargarCargadoresEnVistaActual, 650);
+}
+
+async function cargarCargadoresEnVistaActual(){
+  const badge = document.getElementById('chargersCountBadge');
+  if(!map) return;
+  const zoom = map.getZoom();
+
+  if(zoom < CHARGERS_LIVE_MIN_ZOOM){
+    chargersLiveLayer.clearLayers();
+    if(badge){ badge.style.display='flex'; badge.classList.remove('ok'); badge.innerHTML = '🔍 Acércate en el mapa para ver los cargadores de la zona'; }
+    return;
+  }
+
+  if(ocmFaltaClave()){
+    chargersLiveLayer.clearLayers();
+    if(badge){ badge.style.display='flex'; badge.classList.remove('ok'); badge.innerHTML = OCM_MSG_FALTA_CLAVE; }
+    return;
+  }
+
+  if(chargersLiveController) chargersLiveController.abort();
+  chargersLiveController = new AbortController();
+  if(badge){ badge.style.display='flex'; badge.classList.remove('ok'); badge.innerHTML = '<span class="spinner"></span> Buscando cargadores en esta zona...'; }
+
+  try{
+    const timeout = setTimeout(()=>chargersLiveController.abort(), 8000);
+    const bounds = map.getBounds();
+    const nw = bounds.getNorthWest(), se = bounds.getSouthEast();
+    const url = `https://api.openchargemap.io/v3/poi/?output=json&boundingbox=(${nw.lat},${nw.lng}),(${se.lat},${se.lng})&maxresults=120&compact=true&verbose=false`;
+    const resp = await fetch(url, ocmFetchOptions(chargersLiveController.signal));
+    clearTimeout(timeout);
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+
+    chargersLiveLayer.clearLayers();
+    let dibujados = 0;
+    data.forEach(poi=>{
+      if(poi.AddressInfo && poi.AddressInfo.Latitude && poi.AddressInfo.Longitude){
+        L.marker([poi.AddressInfo.Latitude, poi.AddressInfo.Longitude], {
+          icon: L.divIcon({ html:'⚡', className:'', iconSize:[20,20] })
+        }).bindPopup(poi.AddressInfo.Title || 'Cargador público').addTo(chargersLiveLayer);
+        dibujados++;
+      }
+    });
+
+    if(badge){
+      if(dibujados>0){ badge.classList.add('ok'); badge.innerHTML = `⚡ ${dibujados} cargador${dibujados===1?'':'es'} real${dibujados===1?'':'es'} en esta zona`; }
+      else { badge.classList.remove('ok'); badge.innerHTML = '⚡ Sin cargadores públicos registrados en esta zona'; }
+    }
+  }catch(err){
+    if(err.name === 'AbortError') return; // hay una consulta más reciente en curso, ignoramos esta
+    console.error('No se pudieron cargar los cargadores de la zona visible del mapa:', err);
+    if(badge){ badge.classList.remove('ok'); badge.innerHTML = '⚠️ No se pudo consultar Open Charge Map ahora mismo'; }
+  }
+}
+
+/* =====================================================================
+   CARGADORES CERCANOS (Open Charge Map, sin API key)
+   Tres entradas distintas a la misma idea:
+   1) Capa siempre activa sobre el mapa con TODOS los cargadores de la
+      zona visible (arriba: actualizarCargadoresEnMapa).
+   2) Dentro del resultado de una ruta que "no llega": busca cerca del
+      punto exacto donde se agotaría la batería (mostrarCargadoresCercanos).
+   3) Botón general (FAB ⚡ del mapa), disponible SIEMPRE para cualquier
+      visitante, use o no una ruta: busca cerca de su ubicación real, o
+      si no la da, cerca del centro del mapa o del inicio de la ruta
+      marcada (verCargadoresCerca). Antes esta función solo se disparaba
+      cuando el viaje calculado no llegaba, así que si el usuario no
+      llegaba a probar ese caso (o el viaje sí llegaba) nunca veía nada
+      — de ahí que pareciera que "no detecta cargadores".
+   Open Charge Map no requiere clave de API para este volumen de
+   consultas, pero al no usar una clave propia puede haber límites de
+   uso compartidos con el resto de usuarios del servicio; por eso todas
+   muestran un enlace directo a openchargemap.io para comprobar los
+   datos en tiempo real si la consulta falla o hay dudas.
+===================================================================== */
+
+function abrirOpenChargeMap(lat, lng){
+  const la = (lat != null) ? lat : (ultimoPuntoCargadores ? ultimoPuntoCargadores.lat : null);
+  const lo = (lng != null) ? lng : (ultimoPuntoCargadores ? ultimoPuntoCargadores.lng : null);
+  const url = (la != null && lo != null)
+    ? `https://map.openchargemap.io/#/?latitude=${la}&longitude=${lo}&zoom=12`
+    : 'https://map.openchargemap.io/';
+  window.open(url, '_blank');
+}
+
+function closeChargersOverlay(){
+  document.getElementById('chargersOverlay').classList.remove('open');
+}
+
+function verCargadoresCerca(){
+  if(navigator.geolocation){
+    if(chargersLayer) chargersLayer.clearLayers();
+    if(map) map.setView(map.getCenter(), map.getZoom());
+    navigator.geolocation.getCurrentPosition(function(pos){
+      buscarYMostrarCargadoresGenerico(pos.coords.latitude, pos.coords.longitude, 'tu ubicación actual');
+    }, function(){
+      usarPuntoAlternativoParaCargadores();
+    }, { enableHighAccuracy:true, timeout:6000 });
+  } else {
+    usarPuntoAlternativoParaCargadores();
+  }
+}
+
+function usarPuntoAlternativoParaCargadores(){
+  if(control){
+    const wps = control.getWaypoints().filter(w=>w.latLng);
+    if(wps.length>0){ buscarYMostrarCargadoresGenerico(wps[0].latLng.lat, wps[0].latLng.lng, 'el inicio de tu ruta'); return; }
+  }
+  if(map){
+    const c = map.getCenter();
+    buscarYMostrarCargadoresGenerico(c.lat, c.lng, 'el centro del mapa');
+    return;
+  }
+  alert('No se pudo determinar una ubicación. Activa la localización del navegador o marca una ruta en el mapa.');
+}
+
+async function buscarYMostrarCargadoresGenerico(lat, lng, etiquetaOrigen){
+  ultimoPuntoCargadores = { lat, lng };
+  const overlay = document.getElementById('chargersOverlay');
+  const sub = document.getElementById('chargersOverlaySub');
+  const listEl = document.getElementById('chargersOverlayList');
+  sub.textContent = `Buscando cargadores públicos cerca de ${etiquetaOrigen}...`;
+  listEl.innerHTML = '<div style="font-size:12px;color:var(--text-2);">Consultando Open Charge Map...</div>';
+  overlay.classList.add('open');
+  if(chargersLayer) chargersLayer.clearLayers();
+  if(map) map.setView([lat,lng], 12);
+
+  if(ocmFaltaClave()){
+    sub.textContent = 'Falta configurar Open Charge Map';
+    listEl.innerHTML = `<div style="font-size:12px;color:var(--text-2);">${OCM_MSG_FALTA_CLAVE}</div>`;
+    return;
+  }
+
+  try{
+    const controller = new AbortController();
+    const timeout = setTimeout(()=>controller.abort(), 8000);
+    const url = `https://api.openchargemap.io/v3/poi/?output=json&latitude=${lat}&longitude=${lng}&distance=25&distanceunit=KM&maxresults=15&compact=true&verbose=false`;
+    const resp = await fetch(url, ocmFetchOptions(controller.signal));
+    clearTimeout(timeout);
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+
+    sub.textContent = `Cerca de ${etiquetaOrigen} — ${data.length} encontrados en un radio de 25 km`;
+    if(!data.length){
+      listEl.innerHTML = '<div style="font-size:12px;color:var(--text-2);">No se han encontrado cargadores públicos registrados en Open Charge Map cerca de esa zona. Puede que la zona tenga pocos puntos registrados en su base de datos — compruébalo directamente con el botón de abajo.</div>';
+      return;
+    }
+
+    listEl.innerHTML = data.map(poi=>{
+      const nombre = (poi.AddressInfo && poi.AddressInfo.Title) || 'Cargador público';
+      const dist = (poi.AddressInfo && poi.AddressInfo.Distance != null) ? poi.AddressInfo.Distance.toFixed(1)+' km' : '—';
+      return `<div class="charger-item"><span class="name">⚡ ${nombre}</span><span class="dist">${dist}</span></div>`;
+    }).join('');
+
+    if(chargersLayer){
+      data.forEach(poi=>{
+        if(poi.AddressInfo && poi.AddressInfo.Latitude && poi.AddressInfo.Longitude){
+          L.marker([poi.AddressInfo.Latitude, poi.AddressInfo.Longitude], {
+            icon: L.divIcon({ html:'⚡', className:'', iconSize:[24,24] })
+          }).bindPopup(poi.AddressInfo.Title || 'Cargador público').addTo(chargersLayer);
+        }
+      });
+    }
+  }catch(err){
+    console.error('No se pudieron obtener los cargadores cercanos:', err);
+    sub.textContent = 'No se pudo consultar Open Charge Map ahora mismo.';
+    listEl.innerHTML = '<div style="font-size:12px;color:var(--text-2);">⚠️ Hubo un problema al consultar el servicio (puede estar saturado, sin clave de API propia, o sin conexión). Compruébalo directamente en Open Charge Map con el botón de abajo.</div>';
+  }
+}
+
+function interpolarPuntoEnRuta(coords, kmObjetivo){
+  if(!coords || coords.length===0) return null;
+  let acumulado = 0;
+  for(let i=1;i<coords.length;i++){
+    const a = coords[i-1], b = coords[i];
+    const d = (map.distance ? map.distance([a.lat,a.lng],[b.lat,b.lng]) : 0) / 1000;
+    if(acumulado + d >= kmObjetivo){
+      const frac = d>0 ? (kmObjetivo-acumulado)/d : 0;
+      return { lat: a.lat + (b.lat-a.lat)*frac, lng: a.lng + (b.lng-a.lng)*frac };
+    }
+    acumulado += d;
+  }
+  return coords[coords.length-1];
+}
+
+function puntoDeAgotamiento(autonomiaEstimada){
+  if(!ultimaRutaCoords) return null;
+  if(!state.idaYVuelta || autonomiaEstimada <= rutaDistanciaKm){
+    return interpolarPuntoEnRuta(ultimaRutaCoords, Math.max(0, autonomiaEstimada));
+  }
+  // Con "ida y vuelta" activado, si la batería aguanta la ida pero no toda la vuelta,
+  // asumimos que la vuelta recorre la misma carretera en sentido contrario.
+  const kmEnVuelta = autonomiaEstimada - rutaDistanciaKm;
+  const invertida = ultimaRutaCoords.slice().reverse();
+  return interpolarPuntoEnRuta(invertida, Math.max(0, kmEnVuelta));
+}
+
+async function mostrarCargadoresCercanos(autonomiaEstimada){
+  const box = document.getElementById('chargersBox');
+  const listEl = document.getElementById('chargersList');
+  if(!ultimaRutaCoords){ box.style.display='none'; return; }
+  const punto = puntoDeAgotamiento(autonomiaEstimada);
+  if(!punto){ box.style.display='none'; return; }
+
+  ultimoPuntoCargadores = punto;
+  box.style.display='block';
+  listEl.innerHTML = '<div style="font-size:12px;color:var(--text-2);">Buscando cargadores cercanos...</div>';
+  if(chargersLayer) chargersLayer.clearLayers();
+
+  if(ocmFaltaClave()){
+    listEl.innerHTML = `<div style="font-size:12px;color:var(--text-2);">${OCM_MSG_FALTA_CLAVE}</div>`;
+    return;
+  }
+
+  try{
+    const controller = new AbortController();
+    const timeout = setTimeout(()=>controller.abort(), 7000);
+    // Sin restricción de país: el punto de agotamiento puede caer cerca de
+    // una frontera, y limitar a countrycode=ES descartaba resultados válidos.
+    const url = `https://api.openchargemap.io/v3/poi/?output=json&latitude=${punto.lat}&longitude=${punto.lng}&distance=20&distanceunit=KM&maxresults=8&compact=true&verbose=false`;
+    const resp = await fetch(url, ocmFetchOptions(controller.signal));
+    clearTimeout(timeout);
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+
+    if(!data.length){
+      listEl.innerHTML = '<div style="font-size:12px;color:var(--text-2);">No se han encontrado cargadores públicos registrados en Open Charge Map cerca de esa zona.</div>';
+      return;
+    }
+
+    listEl.innerHTML = data.slice(0,8).map(poi=>{
+      const nombre = (poi.AddressInfo && poi.AddressInfo.Title) || 'Cargador público';
+      const dist = poi.AddressInfo && poi.AddressInfo.Distance ? poi.AddressInfo.Distance.toFixed(1)+' km' : '—';
+      return `<div class="charger-item"><span class="name">⚡ ${nombre}</span><span class="dist">${dist}</span></div>`;
+    }).join('');
+
+    if(chargersLayer){
+      data.forEach(poi=>{
+        if(poi.AddressInfo && poi.AddressInfo.Latitude && poi.AddressInfo.Longitude){
+          L.marker([poi.AddressInfo.Latitude, poi.AddressInfo.Longitude], {
+            icon: L.divIcon({ html:'⚡', className:'', iconSize:[24,24] })
+          }).bindPopup(poi.AddressInfo.Title || 'Cargador público').addTo(chargersLayer);
+        }
+      });
+    }
+  }catch(err){
+    console.error('No se pudieron obtener los cargadores cercanos:', err);
+    listEl.innerHTML = '<div style="font-size:12px;color:var(--text-2);">⚠️ No se pudieron cargar los cargadores cercanos ahora mismo (el servicio puede estar saturado o sin conexión). Consulta openchargemap.org directamente con el enlace de abajo.</div>';
+  }
+}
 
 /* =====================================================================
    CÁLCULO (misma fórmula física que la calculadora original)
+   computeAutonomia() es una función pura: recibe la ficha de una moto y
+   usa el estado de ritmo/entorno + la ruta actual. La reutilizan tanto
+   el cálculo principal como el modo "Comparar".
 ===================================================================== */
-function calcularViabilidad() {
-  if (!control) { alert("⚠️ El mapa no se ha cargado. Recarga la página o comprueba tu conexión a internet."); return; }
-  if (rutaDistanciaKm === 0) { alert("⚠️ Primero marca una ruta en el mapa."); return; }
-
-  const specs = getVehicleSpecs();
+function computeAutonomia(specs) {
   let claseVehiculo = specs.claseVehiculo;
   let wh = specs.capacidadWh;
   let potenciaNominal = specs.potenciaW || 3000;
@@ -774,7 +1427,6 @@ function calcularViabilidad() {
   let temp = state.temp;
   let vientoFrontal = state.viento;
   let trafico = state.trafico;
-  let terreno = state.terreno;
   let regeneracion = specs.regeneracion;
 
   const g = 9.81; const densidadAire = 1.225; let masaTotal = pesoM + pesoP;
@@ -787,12 +1439,11 @@ function calcularViabilidad() {
 
   let velMs = velMedia / 3.6; let velVientoMs = vientoFrontal / 3.6;
   let CdA = (tipo === 'scooter') ? 0.40 : ((tipo === 'cross') ? 0.60 : 0.45);
-  let Crr = 0.018; let slope = (terreno === 'hilly') ? 0.015 : ((terreno === 'mountain') ? 0.04 : 0);
+  let Crr = 0.018;
 
   let pRodadura = masaTotal * g * Crr * velMs;
   let pAero = 0.5 * densidadAire * CdA * Math.pow((velMs + velVientoMs), 3);
-  let pPendiente = masaTotal * g * slope * velMs;
-  let potenciaMecanica = pRodadura + pAero + pPendiente;
+  let potenciaMecanica = pRodadura + pAero;
   let eficiencia = 0.90 * factorTraficoEficiencia;
 
   let cargaMotor = potenciaMecanica / potenciaNominal;
@@ -800,26 +1451,38 @@ function calcularViabilidad() {
 
   let factorTemp = (temp < 15) ? (1 - ((15 - temp) * 0.015)) : ((temp > 35) ? 0.98 : 1.0);
   let factorRegen = 1.0;
-  if (terreno === 'hilly' || terreno === 'mountain') { if (regeneracion === '1') factorRegen = 1.10; if (regeneracion === '2') factorRegen = 1.15; }
-  else { if (trafico === 'high' && regeneracion !== '0') factorRegen = 1.08; else if (regeneracion === '2') factorRegen = 1.05; }
+  if (trafico === 'high' && regeneracion !== '0') factorRegen = 1.08;
+  else if (regeneracion === '2') factorRegen = 1.05;
 
   let potenciaElectrica = potenciaMecanica / eficiencia;
   let consumoWhKm = (potenciaElectrica / velMedia); if (consumoWhKm < 15) consumoWhKm = 15;
 
   let energiaDisponible = wh * factorTemp * 0.95 * factorRegen;
   let autonomiaEstimada = energiaDisponible / consumoWhKm;
-  let kmRestantes = autonomiaEstimada - rutaDistanciaKm;
+  const distanciaCalculo = rutaDistanciaKm * (state.idaYVuelta ? 2 : 1);
+  let kmRestantes = autonomiaEstimada - distanciaCalculo;
 
   let advertencia = "";
   if (claseVehiculo === 'ciclomotor' && velocidadMediaCalculada > 60) advertencia = "La ruta es de autovía/autopista. Se ha calculado limitando a 45 km/h porque tu vehículo es un ciclomotor.";
   else if (potenciaMecanica > (potenciaNominal * 1.5)) advertencia = "La ruta exige más potencia de la que ofrece este motor de forma sostenida (pendientes o velocidad muy altas).";
 
-  showResult({ kmRestantes, autonomiaEstimada, consumoWhKm, advertencia });
+  return { kmRestantes, autonomiaEstimada, consumoWhKm, advertencia, ok: kmRestantes >= 0, distanciaCalculo };
 }
 
-function showResult({kmRestantes, autonomiaEstimada, consumoWhKm, advertencia}){
+function calcularViabilidad() {
+  if (!control) { alert("⚠️ El mapa no se ha cargado. Recarga la página o comprueba tu conexión a internet."); return; }
+  if (rutaDistanciaKm === 0) { alert("⚠️ Primero marca una ruta en el mapa."); return; }
+
+  const specs = getVehicleSpecs();
+  const resultado = computeAutonomia(specs);
+  showResult({ ...resultado, potenciaW: specs.potenciaW || 3000, picoKwReal: specs.picoKwReal, ccManual: specs.ccEquivalenteManual });
+  actualizarCargadoresEnMapa(); // refresca los cargadores reales visibles en el mapa al calcular
+}
+
+function showResult({kmRestantes, autonomiaEstimada, consumoWhKm, advertencia, potenciaW, picoKwReal, ccManual, distanciaCalculo}){
+  const distanciaMostrada = distanciaCalculo != null ? distanciaCalculo : rutaDistanciaKm;
   const ok = kmRestantes >= 0;
-  const pctUsado = Math.min(100, Math.max(0, Math.round((rutaDistanciaKm / autonomiaEstimada) * 100)));
+  const pctUsado = Math.min(100, Math.max(0, Math.round((distanciaMostrada / autonomiaEstimada) * 100)));
   const pctRestante = ok ? Math.max(0, 100 - pctUsado) : 0;
 
   const arc = document.getElementById('gaugeArc');
@@ -841,7 +1504,7 @@ function showResult({kmRestantes, autonomiaEstimada, consumoWhKm, advertencia}){
     : `Te faltarían aproximadamente <b>${Math.abs(Math.round(kmRestantes))} km</b> para completar la ruta sin recargar.`;
 
   document.getElementById('statConsumo').textContent = Math.round(consumoWhKm);
-  document.getElementById('statDistancia').textContent = rutaDistanciaKm.toFixed(1) + ' km';
+  document.getElementById('statDistancia').textContent = distanciaMostrada.toFixed(1) + ' km' + (state.idaYVuelta ? ' (ida y vuelta)' : '');
   document.getElementById('statAutonomia').textContent = Math.round(autonomiaEstimada) + ' km';
   document.getElementById('statRestante').textContent = (ok ? '+' : '−') + Math.abs(Math.round(kmRestantes)) + ' km';
   document.getElementById('statRestanteLbl').textContent = ok ? 'Sobrante' : 'Faltante';
@@ -850,9 +1513,71 @@ function showResult({kmRestantes, autonomiaEstimada, consumoWhKm, advertencia}){
   if(advertencia){ wBox.style.display='flex'; document.getElementById('warningText').textContent = advertencia; }
   else wBox.style.display = 'none';
 
+  const fuelBox = document.getElementById('fuelBox');
+  if(potenciaW){
+    const eq = equivalenteGasolina(potenciaW, distanciaMostrada, picoKwReal, ccManual);
+    fuelBox.style.display = 'flex';
+    document.getElementById('fuelLitros').textContent = `≈ ${eq.litros.toFixed(1)} L de gasolina`;
+    document.getElementById('fuelDetalle').textContent = `equivalente a una moto de gasolina de ~${eq.cc}cc en esta misma ruta`;
+  } else {
+    fuelBox.style.display = 'none';
+  }
+
+  const chargersBox = document.getElementById('chargersBox');
+  if(!ok){
+    mostrarCargadoresCercanos(autonomiaEstimada);
+  } else {
+    chargersBox.style.display = 'none';
+    if(chargersLayer) chargersLayer.clearLayers();
+  }
+
   document.getElementById('overlay').classList.add('open');
 }
 function closeSheet(){ document.getElementById('overlay').classList.remove('open'); }
+
+/* =====================================================================
+   COMPARAR DOS MOTOS EN LA MISMA RUTA
+===================================================================== */
+function poblarSelectoresComparar(){
+  const opts = Object.entries(MODELOS_MOTO).map(([id,m])=>`<option value="${id}">${m.marca} — ${m.nombre}</option>`).join('');
+  const a = document.getElementById('cmpA'), b = document.getElementById('cmpB');
+  if(!a || !b) return;
+  a.innerHTML = opts; b.innerHTML = opts;
+  const ids = Object.keys(MODELOS_MOTO);
+  a.value = ids[0]; b.value = ids.find(id=>MODELOS_MOTO[id].marca==='Zero Motorcycles') || ids[1];
+}
+
+function compararMotos(){
+  if (!control) { alert("⚠️ El mapa no se ha cargado. Recarga la página o comprueba tu conexión a internet."); return; }
+  if (rutaDistanciaKm === 0) { alert("⚠️ Primero marca una ruta en el mapa."); return; }
+
+  const idA = document.getElementById('cmpA').value;
+  const idB = document.getElementById('cmpB').value;
+  const mA = MODELOS_MOTO[idA], mB = MODELOS_MOTO[idB];
+  const rA = computeAutonomia(mA);
+  const rB = computeAutonomia(mB);
+
+  const wrap = document.getElementById('compareResults');
+  wrap.style.display = 'grid';
+  wrap.innerHTML = [[mA, rA, TIPO_ICON[mA.tipoMoto]], [mB, rB, TIPO_ICON[mB.tipoMoto]]].map(([m, r, icon])=>`
+    <div class="compare-card ${r.ok?'ok':'bad'}">
+      <div class="cc-icon">${icon||'🏍️'}</div>
+      <div class="cc-name">${m.nombre}</div>
+      <div class="cc-verdict ${r.ok?'ok':'bad'}">${r.ok ? '✅ Llegas' : '❌ No llegas'}</div>
+      <div class="cc-detail">${r.ok ? `+${Math.round(r.kmRestantes)} km de margen` : `Faltan ${Math.abs(Math.round(r.kmRestantes))} km`}</div>
+      <div class="cc-stat">${Math.round(r.consumoWhKm)} Wh/km · ${Math.round(r.autonomiaEstimada)} km autonomía est.</div>
+    </div>
+  `).join('');
+
+  const chargerLink = document.getElementById('cmpChargerLink');
+  if(chargerLink){
+    chargerLink.style.display = 'block';
+    if(control){
+      const wps = control.getWaypoints().filter(w=>w.latLng);
+      if(wps.length>0) ultimoPuntoCargadores = { lat: wps[0].latLng.lat, lng: wps[0].latLng.lng };
+    }
+  }
+}
 </script>
 </body>
 </html>
